@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d1d1b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Carnet de Chantier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+:root{--bg:#f5f4f0;--card:#fff;--ink:#1d1d1b;--mute:#6b6a65;--line:#e4e2db;--accent:#d9480f;--accent-soft:#fff0e6;--r:12px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.2}
+h1{font-size:22px;font-weight:700}h2{font-size:18px;font-weight:700}h3{font-size:15px;font-weight:600}
+.top{position:sticky;top:0;z-index:20;background:#1d1d1b;color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));min-height:54px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.2px;flex:1;min-width:0}
+.logo{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;flex:none}
+.top .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.icobtn{background:transparent;border:0;color:inherit;min-width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer;font-size:20px;padding:0 8px}
+.icobtn:hover{background:rgba(255,255,255,.1)}
+.icobtn.txt{font-size:13px;font-weight:600}
+.banner{background:#fff8db;border-bottom:1px solid #f0e3a8;padding:8px 14px;font-size:13px;color:#6b5600}
+.banner.info{background:var(--accent-soft);border-color:#ffd8bf;color:#8a2f06;display:flex;align-items:center;gap:10px}
+.banner.info b{flex:1}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 14px 120px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:#cfccc2}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.dark{background:#1d1d1b;border-color:#1d1d1b;color:#fff}
+.btn.green{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.btn.danger{color:#c92a2a;border-color:#f3c4c4}
+.btn.sm{padding:6px 10px;font-size:13px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.grid{display:grid;gap:12px}
+.g-proj{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.proj{cursor:pointer}.proj:hover{border-color:var(--accent)}
+.muted{color:var(--mute)}.small{font-size:13px}
+.empty{text-align:center;padding:36px 16px;color:var(--mute)}
+.empty .big{font-size:40px;margin-bottom:8px}
+.tabs{display:flex;gap:4px;background:#fff;border-bottom:1px solid var(--line);padding:0 10px;overflow-x:auto;position:sticky;top:calc(54px + env(safe-area-inset-top));z-index:15}
+.tab{border:0;background:none;padding:12px;font-weight:600;font-size:14px;color:var(--mute);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.on{color:var(--ink);border-color:var(--accent)}
+@media (max-width:700px){
+  .tabs{position:fixed;bottom:0;top:auto;left:0;right:0;border-top:1px solid var(--line);border-bottom:0;justify-content:space-around;padding:0 0 env(safe-area-inset-bottom)}
+  .tab{display:flex;flex-direction:column;align-items:center;font-size:10.5px;padding:8px 4px 9px;border-bottom:0;border-top:2px solid transparent;gap:2px}
+  .tab.on{border-color:var(--accent)}.tab i{font-style:normal;font-size:18px}
+}
+@media (min-width:701px){.tab i{display:none}}
+.fab{position:fixed;right:18px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:25;background:var(--accent);color:#fff;border:0;border-radius:28px;padding:14px 20px;font-weight:700;box-shadow:0 6px 18px rgba(217,72,15,.35);cursor:pointer}
+@media (max-width:700px){.fab{bottom:calc(82px + env(safe-area-inset-bottom))}}
+.stats{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.stat{padding:12px 14px}.stat .n{font-size:26px;font-weight:700}.stat .l{font-size:13px;color:var(--mute)}
+.bar{height:10px;background:#eceae3;border-radius:6px;overflow:hidden;display:flex}.bar span{display:block;height:100%}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--mute);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--line)}
+.t td{padding:9px 6px;border-bottom:1px solid #f0eee8;vertical-align:top}
+.t td.n,.t th.n{text-align:center;width:56px}
+.tscroll{overflow-x:auto}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;color:#fff;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.filters{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+@media (min-width:700px){.filters{grid-template-columns:2fr 1fr 1fr 1fr}}
+.inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;outline:none}
+.inp:focus{border-color:var(--accent)}
+.issue{display:flex;gap:12px;align-items:center;padding:10px;cursor:pointer}
+.issue:hover{border-color:#cfccc2}
+.thumb{width:58px;height:58px;border-radius:9px;background:#eceae3 center/cover no-repeat;flex:none;display:grid;place-items:center;font-size:22px;color:#aaa}
+.issue .body{flex:1;min-width:0}
+.issue .ttl{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.num{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;color:#fff;font-size:12px;font-weight:700;padding:0 6px;margin-right:6px}
+.late{color:#c92a2a;font-weight:600}
+.g-plans{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.plancard{padding:0;overflow:hidden;cursor:pointer}
+.plancard .im{aspect-ratio:4/3;background:#eceae3 center/contain no-repeat}
+.plancard .cap{padding:10px 12px}
+.pv-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.plan-scroll{overflow:auto;background:#e9e7e0;border:1px solid var(--line);border-radius:var(--r);height:calc(100vh - 240px);min-height:320px}
+.plan-inner{position:relative;margin:0 auto}
+.plan-inner img{display:block;width:100%;user-select:none;-webkit-user-drag:none}
+.plan-inner.adding{cursor:crosshair}
+.pin{position:absolute;transform:translate(-50%,-50%);min-width:26px;height:26px;border-radius:13px;border:2px solid #fff;color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;padding:0 5px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.toggle.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ov{position:fixed;inset:0;background:rgba(20,20,18,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+@media (min-width:701px){.ov{align-items:center;padding:20px}}
+.sheet{background:#fff;width:100%;max-width:640px;max-height:94vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column}
+@media (min-width:701px){.sheet{border-radius:16px}}
+.sheet.wide{max-width:900px}
+.mh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.mh h2{flex:1}
+.x{border:0;background:#f1efe9;width:34px;height:34px;border-radius:17px;font-size:20px;cursor:pointer;flex:none}
+.mb{padding:14px 16px;overflow:auto;flex:1}
+.mf{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+label.f,.fld{display:block;margin-bottom:12px;font-size:13px;font-weight:600;color:#45443f}
+label.f .inp{margin-top:5px;font-weight:400}
+.fld>span{display:block;margin-bottom:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:500px){.g2{grid-template-columns:1fr}}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:13px;font-weight:600;cursor:pointer}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.ph{position:relative;width:86px;height:86px;border-radius:10px;background:#eee center/cover no-repeat;cursor:zoom-in}
+.ph button{position:absolute;width:26px;height:26px;border-radius:13px;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:13px;cursor:pointer;display:grid;place-items:center}
+.ph .rm{top:4px;right:4px}.ph .ed{bottom:4px;right:4px}
+.addph{width:86px;height:86px;border:1.5px dashed #cfccc2;border-radius:10px;display:grid;place-items:center;text-align:center;font-size:12px;color:var(--mute);cursor:pointer;background:#faf9f6}
+.addph input{display:none}
+.mini{position:relative;width:100%;max-width:300px;border-radius:10px;overflow:hidden;border:1px solid var(--line);cursor:pointer;margin-top:8px}
+.mini img{display:block;width:100%}
+.hist{border-left:2px solid var(--line);padding-left:10px;margin:6px 0 8px}
+.hist div{font-size:13px;margin-bottom:4px;font-weight:400}
+.hist small{color:var(--mute)}
+.att{display:grid;grid-template-columns:1fr 110px 70px 70px;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid #f0eee8;font-weight:400}
+@media (max-width:500px){.att{grid-template-columns:1fr 1fr 1fr}.att>span{grid-column:1/-1}}
+.chk{display:flex;align-items:center;gap:8px;font-weight:500;margin:6px 0;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+#toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,40px);background:#1d1d1b;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:100;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.annot canvas{width:100%;display:block;touch-action:none;border-radius:8px;background:#222}
+.colors{display:flex;gap:6px}
+.colors button{width:30px;height:30px;border-radius:15px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.colors button.on{box-shadow:0 0 0 2px var(--ink)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:14px}
+.kv dt{color:var(--mute)}.kv dd{margin:0}
+.section-t{margin:22px 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.section-t h2{flex:1}
+.busy{position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:90;display:grid;place-items:center;font-weight:600;text-align:center;padding:20px}
+.kp{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1px solid}
+.kp .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:6px;color:#fff;flex:none;margin-top:2px}
+.kp .tx{flex:1;white-space:pre-wrap}
+.kp button{border:0;background:none;cursor:pointer;color:var(--mute);font-size:16px}
+.addline{display:grid;grid-template-columns:130px 1fr auto auto;gap:6px;margin-top:6px}
+@media (max-width:560px){.addline{grid-template-columns:1fr auto auto}.addline select{grid-column:1/-1}}
+.act{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f0eee8}
+.act:last-child{border-bottom:0}
+.act .cb{width:24px;height:24px;border-radius:7px;border:2px solid #cfccc2;background:#fff;cursor:pointer;flex:none;display:grid;place-items:center;font-weight:700;color:#fff}
+.act .cb.on{background:#2f9e44;border-color:#2f9e44}
+.act .body{flex:1;min-width:0}
+.act.done .tx{text-decoration:line-through;color:var(--mute)}
+.actform{display:grid;grid-template-columns:2fr 1fr 130px auto;gap:6px;margin-top:10px}
+@media (max-width:640px){.actform{grid-template-columns:1fr 1fr}.actform input:first-child{grid-column:1/-1}}
+.mic{border:1px solid var(--line);background:#fff;border-radius:8px;padding:2px 8px;font-size:13px;cursor:pointer;margin-left:6px;font-weight:600}
+.mic.on{background:#c92a2a;color:#fff;border-color:#c92a2a}
+.sigpad{width:100%;height:180px;border:1.5px dashed #cfccc2;border-radius:10px;touch-action:none;background:#fff;display:block}
+.sigs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.sig{border:1px solid var(--line);border-radius:10px;padding:8px;font-size:13px;position:relative}
+.sig img{width:100%;height:70px;object-fit:contain;display:block}
+.sig button{position:absolute;top:4px;right:4px;border:0;background:none;cursor:pointer;color:var(--mute)}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.validate{background:#e7f5ff;border:1px solid #a5d8ff;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13.5px}
+.linkbox{background:#f8f7f3;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:13px;word-break:break-all;margin:6px 0}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:80;display:grid;place-items:center;cursor:zoom-out}
+.lightbox img{max-width:96vw;max-height:92vh}
+</style>
+</head>
+<body>
+<div id="app"><div class="empty" style="padding-top:30vh">Chargement…</div></div>
+<div id="modal-root"></div>
+<div id="confirm-root"></div>
+<div id="toast"></div>
+<script>
+"use strict";
+/* ====================== Configuration ====================== */
+const CFG=window.APP_CONFIG||{};
+const APP_NAME=CFG.appName||'Carnet de Chantier';
+const HAS_SB=!!(CFG.supabaseUrl&&CFG.supabaseKey);
+const SB_LIB='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+const JSPDF='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+const PDFJSW='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+document.title=APP_NAME;
+
+/* ====================== Utilitaires ====================== */
+const $=(s,el=document)=>el.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const token=()=>{const a=new Uint8Array(18);crypto.getRandomValues(a);return Array.from(a,b=>'abcdefghijkmnpqrstuvwxyz23456789'[b%32]).join('')};
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+function fmtDate(v){if(!v)return'';const d=typeof v==='number'?new Date(v):new Date(v+'T12:00:00');if(isNaN(d))return'';return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function fmtDT(ts){const d=new Date(ts);return d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+const STATUS={afaire:{l:'À lever',c:'#d6336c'},encours:{l:'En cours',c:'#e67700'},levee:{l:'Levée',c:'#1c7ed6'},validee:{l:'Validée',c:'#2f9e44'}};
+const PRIO={basse:'Basse',normale:'Normale',haute:'Haute',urgente:'Urgente'};
+const VISIT_TYPES=['Réunion de chantier','Visite de chantier','OPR','Réception','Levée de réserves'];
+const PRESENCE={present:'Présent',absent:'Absent',excuse:'Excusé',convoque:'Convoqué'};
+const KP={decision:{l:'Décision',c:'#2f9e44',bg:'#ebfbee'},important:{l:'À retenir',c:'#d9480f',bg:'#fff4e6'},alerte:{l:'Alerte',c:'#c92a2a',bg:'#fff5f5'},cout:{l:'Coût / avenant',c:'#7048e8',bg:'#f3f0ff'},info:{l:'Info',c:'#1c7ed6',bg:'#e7f5ff'}};
+const LOTS=['VRD','Terrassement','Gros œuvre','Charpente','Couverture','Étanchéité','Façades','Menuiseries extérieures','Serrurerie','Plâtrerie – Isolation','Menuiseries intérieures','Électricité','Plomberie – Sanitaire','CVC','Carrelage – Faïence','Sols souples','Peinture','Ascenseur','Espaces verts','Nettoyage'];
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3400)}
+function handleErr(e){console.warn(e);const m=(e&&(e.message||e.error_description))||String(e);
+  if(/quota|plein/i.test(m))toast('Stockage plein : supprimez des éléments.');
+  else if(/JWT|auth|permission|row-level/i.test(m))toast('Action refusée : reconnectez-vous.');
+  else if(/Failed to fetch|NetworkError|network/i.test(m))toast('Pas de connexion internet.');
+  else toast('Erreur : '+m)}
+function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector('script[src="'+src+'"]'))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Chargement impossible (connexion ?)'));document.head.appendChild(s)})}
+function busy(msg){let b=$('#busy');if(!msg){b&&b.remove();return}if(!b){b=document.createElement('div');b.id='busy';b.className='busy';document.body.appendChild(b)}b.textContent=msg}
+function saveFile(name,blob){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copié dans le presse-papiers');return true}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();toast(ok?'Copié':'Copie impossible : sélectionnez le texte');return ok}}
+
+/* ====================== Stockage ====================== */
+const KIND={companies:'company',plans:'plan',issues:'issue',visits:'visit',actions:'action'};
+/* Mode démonstration : navigateur uniquement */
+const Local={data:{},ls:[],
+  load(){try{this.data=JSON.parse(localStorage.getItem('cdc_demo')||'{}')}catch(e){this.data={}}},
+  save(){try{localStorage.setItem('cdc_demo',JSON.stringify(this.data))}catch(e){throw new Error('stockage plein')}},
+  par(p){return p.split('/').slice(0,-1).join('/')},
+  list(c){return Object.keys(this.data).filter(k=>this.par(k)===c).map(k=>Object.assign({id:k.split('/').pop()},this.data[k]))},
+  emit(c){this.ls.filter(l=>l.c===c).forEach(l=>l.cb(this.list(c)))},
+  listen(c,cb){const l={c,cb};this.ls.push(l);setTimeout(()=>cb(this.list(c)));return()=>{this.ls=this.ls.filter(x=>x!==l)}},
+  async set(p,d){const prev=this.data[p];this.data[p]=JSON.parse(JSON.stringify(d));try{this.save()}catch(e){if(prev===undefined)delete this.data[p];else this.data[p]=prev;throw e}this.emit(this.par(p))},
+  async del(p){delete this.data[p];this.save();this.emit(this.par(p))},
+  async delProject(pid){Object.keys(this.data).filter(k=>k.startsWith('projects/'+pid+'/')).forEach(k=>delete this.data[k]);delete this.data['projects/'+pid];this.save();this.emit('projects')},
+  async upload(blob){return null},
+  async listLinks(){return[]},async saveLink(){throw new Error('Les liens entreprises nécessitent la base de données en ligne.')},async revokeLink(){}
+};
+/* Mode en ligne : Supabase */
+const Supa={sb:null,cache:{},ls:[],loaded:{},chans:{},delChan:null,
+  parse(c){const s=c.split('/');return s.length===1?{kind:'project',pid:null}:{kind:KIND[s[2]],pid:s[1]}},
+  parseDoc(p){const s=p.split('/');return s.length===2?{kind:'project',pid:null,id:s[1]}:{kind:KIND[s[2]],pid:s[1],id:s[3]}},
+  key(k,p){return k+'|'+(p||'')},
+  bucket(k,p){const key=this.key(k,p);return this.cache[key]||(this.cache[key]={})},
+  emit(k,p){const key=this.key(k,p);const b=this.cache[key]||{};const arr=Object.keys(b).map(id=>Object.assign({id},b[id]));this.ls.filter(l=>l.k===key).forEach(l=>l.cb(arr))},
+  async fetch(k,p){let q=this.sb.from('items').select('id,data').eq('kind',k);if(p)q=q.eq('project_id',p);const {data,error}=await q;if(error){handleErr(error);return}const b={};data.forEach(r=>b[r.id]=r.data);this.cache[this.key(k,p)]=b;this.emit(k,p)},
+  listen(c,cb){const {kind,pid}=this.parse(c);const key=this.key(kind,pid);const l={k:key,cb};this.ls.push(l);
+    if(!this.loaded[key]){this.loaded[key]=true;this.fetch(kind,pid);this.subscribe(pid)}else setTimeout(()=>this.emit(kind,pid));
+    return()=>{this.ls=this.ls.filter(x=>x!==l)}},
+  subscribe(pid){const name=pid?'p-'+pid:'projects';if(this.chans[name])return;
+    this.chans[name]=this.sb.channel(name).on('postgres_changes',{event:'*',schema:'public',table:'items',filter:pid?'project_id=eq.'+pid:'kind=eq.project'},pl=>this.onChange(pl)).subscribe();
+    if(!this.delChan)this.delChan=this.sb.channel('suppressions').on('postgres_changes',{event:'DELETE',schema:'public',table:'items'},pl=>this.onChange(pl)).subscribe()},
+  onChange(pl){if(pl.eventType==='DELETE'){const id=pl.old&&pl.old.id;for(const key in this.cache){if(this.cache[key][id]){delete this.cache[key][id];const [k,p]=key.split('|');this.emit(k,p||null)}}return}
+    const r=pl.new;if(!r||!r.id||!r.kind)return;const p=r.kind==='project'?null:r.project_id;this.bucket(r.kind,p)[r.id]=r.data;this.emit(r.kind,p)},
+  refresh(){for(const key in this.loaded){const [k,p]=key.split('|');this.fetch(k,p||null)}},
+  async set(path,d){const {kind,pid,id}=this.parseDoc(path);const b=this.bucket(kind,pid);const prev=b[id];b[id]=JSON.parse(JSON.stringify(d));this.emit(kind,pid);
+    const {error}=await this.sb.from('items').upsert({id,project_id:kind==='project'?id:pid,kind,data:b[id],updated_at:new Date().toISOString()});
+    if(error){if(prev===undefined)delete b[id];else b[id]=prev;this.emit(kind,pid);throw error}},
+  async del(path){const {kind,pid,id}=this.parseDoc(path);const b=this.bucket(kind,pid);const prev=b[id];delete b[id];this.emit(kind,pid);
+    const {error}=await this.sb.from('items').delete().eq('id',id);if(error){if(prev)b[id]=prev;this.emit(kind,pid);throw error}},
+  async delProject(pid){let r=await this.sb.from('items').delete().eq('project_id',pid);if(r.error)throw r.error;await this.sb.from('access_links').delete().eq('project_id',pid);delete this.bucket('project',null)[pid];this.emit('project',null)},
+  async upload(blob){const path=(S.pid||'divers')+'/'+uid()+'.jpg';const {error}=await this.sb.storage.from('media').upload(path,blob,{contentType:'image/jpeg',cacheControl:'31536000'});if(error)throw error;return this.sb.storage.from('media').getPublicUrl(path).data.publicUrl},
+  async listLinks(pid){const {data,error}=await this.sb.from('access_links').select('*').eq('project_id',pid).eq('revoked',false);if(error)throw error;return data||[]},
+  async saveLink(pid,cid){const t=token();const {error}=await this.sb.from('access_links').insert({token:t,project_id:pid,company_id:cid});if(error)throw error;return t},
+  async revokeLink(t){const {error}=await this.sb.from('access_links').update({revoked:true}).eq('token',t);if(error)throw error}
+};
+let API=Local;
+const linkUrl=t=>location.origin+location.pathname+'?acces='+t;
+
+/* ====================== État ====================== */
+const S={projects:[],pid:null,tab:'dash',companies:[],plans:[],issues:[],visits:[],actions:[],subs:[],
+  f:{q:'',status:'',company:'',plan:''},planView:null,adding:false,zoom:1,placing:false,
+  draft:null,draftKind:null,visitView:null,activeVisit:'',links:{},user:null,mode:'demo',
+  rep:{type:'reserves',visitId:'',companyId:'',st:{afaire:true,encours:true,levee:true,validee:false},plans:true,photos:true}};
+const P={coll:n=>'projects/'+S.pid+'/'+n,doc:(n,id)=>'projects/'+S.pid+'/'+n+'/'+id};
+const curProj=()=>S.projects.find(p=>p.id===S.pid)||{name:'Projet'};
+const lotSort=(a,b)=>(a.lot||'~').localeCompare(b.lot||'~','fr')||(a.name||'').localeCompare(b.name||'','fr');
+const comps=()=>[...S.companies].sort(lotSort);
+const comp=id=>S.companies.find(c=>c.id===id);
+const compLabel=id=>{const c=comp(id);return c?(c.lot?c.lot+' – ':'')+c.name:'Non affectée'};
+const planName=id=>{const p=S.plans.find(p=>p.id===id);return p?p.name:''};
+const isLate=i=>i.due&&(i.status==='afaire'||i.status==='encours')&&i.due<today();
+const actLate=a=>a.status!=='faite'&&a.due&&a.due<today();
+const actWho=a=>a.companyId?(comp(a.companyId)||{}).name||'Entreprise':(a.who||'—');
+const imgSrc=r=>r?(r.d||r.u||''):'';
+const visitLabel=v=>v?((v.num?'n°'+v.num+' – ':'')+v.type+' du '+fmtDate(v.date)):'';
+const attOf=(v,cid)=>{const a=v&&v.att&&v.att[cid];return typeof a==='string'?{p:a}:(a||{})};
+
+/* ====================== Images ====================== */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();if(!/^(data|blob):/.test(src))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=()=>rej(new Error('image'));i.src=src})}
+async function blobToImg(b){const u=URL.createObjectURL(b);try{return await loadImg(u)}finally{setTimeout(()=>URL.revokeObjectURL(u),5000)}}
+function drawScaled(img,max){const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height;const r=Math.min(1,max/Math.max(W,H));const c=document.createElement('canvas');c.width=Math.round(W*r);c.height=Math.round(H*r);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);return c}
+const canvasBlob=(c,q)=>new Promise(r=>c.toBlob(r,'image/jpeg',q));
+async function storeImage(blob,kind){const img=await blobToImg(blob);
+  if(API===Supa){const c=drawScaled(img,kind==='plan'?2600:1600);const b=await canvasBlob(c,.82);const u=await Supa.upload(b);return{u,w:c.width,h:c.height}}
+  const c=drawScaled(img,kind==='plan'?1500:720);return{d:c.toDataURL('image/jpeg',kind==='plan'?.6:.55),w:c.width,h:c.height}}
+async function smallPhoto(blob){const img=await blobToImg(blob);const c=drawScaled(img,900);return{d:c.toDataURL('image/jpeg',.6),w:c.width,h:c.height}}
+async function srcToData(src,max){const img=await loadImg(src);const c=drawScaled(img,max);return{d:c.toDataURL('image/jpeg',.8),w:c.width,h:c.height}}
+async function pdfToBlobs(file,maxPages){await loadScript(PDFJS);await loadScript(PDFJSW);const lib=window.pdfjsLib;lib.GlobalWorkerOptions.workerSrc=PDFJSW;
+  const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;const out=[];const n=Math.min(pdf.numPages,maxPages);
+  for(let i=1;i<=n;i++){busy('Conversion du PDF… page '+i+'/'+n);const pg=await pdf.getPage(i);const v0=pg.getViewport({scale:1});const v=pg.getViewport({scale:Math.min(4,2600/Math.max(v0.width,v0.height))});
+    const c=document.createElement('canvas');c.width=v.width;c.height=v.height;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:ctx,viewport:v}).promise;out.push(await canvasBlob(c,.85))}
+  return{blobs:out,total:pdf.numPages}}
+function lightbox(src){const d=document.createElement('div');d.className='lightbox';d.innerHTML=`<img src="${esc(src)}">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
+
+/* ====================== Dictée vocale ====================== */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let REC=null;
+const mic=target=>SR?`<button type="button" class="mic" data-act="mic" data-target="${target}">🎙 Dicter</button>`:'';
+function toggleMic(btn){const el=document.getElementById(btn.dataset.target);if(!el)return;
+  if(REC){REC.stop();return}
+  const r=new SR();r.lang='fr-FR';r.continuous=true;r.interimResults=false;REC=r;btn.classList.add('on');btn.textContent='■ Stop';
+  r.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)t+=e.results[i][0].transcript;if(t){el.value=(el.value?el.value.replace(/\s*$/,' '):'')+t.trim();el.dispatchEvent(new Event('input',{bubbles:true}))}};
+  r.onerror=e=>{if(e.error==='not-allowed')toast('Autorisez le micro pour dicter')};
+  r.onend=()=>{REC=null;btn.classList.remove('on');btn.textContent='🎙 Dicter'};
+  try{r.start()}catch(e){REC=null}}
+
+/* ====================== Démarrage ====================== */
+async function init(){
+  const acc=new URLSearchParams(location.search).get('acces');
+  if(acc){return initPortal(acc)}
+  if(HAS_SB){
+    try{await loadScript(SB_LIB)}catch(e){$('#app').innerHTML=`<div class="empty" style="padding-top:25vh">Connexion impossible. Vérifiez votre accès internet puis rechargez la page.</div>`;return}
+    const recovery=/type=recovery/.test(location.hash);
+    Supa.sb=supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey);API=Supa;S.mode='online';
+    Supa.sb.auth.onAuthStateChange((ev,sess)=>{const had=!!S.user;S.user=sess&&sess.user||null;
+      if(ev==='PASSWORD_RECOVERY'){S.recovering=true;renderNewPassword();return}
+      if(!S.user&&had&&!S.recovering){location.reload()}});
+    const {data}=await Supa.sb.auth.getSession();
+    if(recovery||S.recovering){if(data.session){S.recovering=true;renderNewPassword()}else renderLogin('Lien de réinitialisation expiré : demandez-en un nouveau.');return}
+    if(/error_code=|error=/.test(location.hash)){history.replaceState(null,'',location.pathname);renderLogin('Lien expiré ou déjà utilisé : demandez-en un nouveau.');return}
+    if(!data.session){renderLogin();return}
+    S.user=data.session.user;
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')Supa.refresh()});
+  }else{Local.load();API=Local;S.mode='demo'}
+  start();
+}
+function start(){API.listen('projects',arr=>{S.projects=arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));render()});window.addEventListener('hashchange',route);route();render()}
+function renderLogin(err){
+  $('#app').innerHTML=`<div class="login"><div class="row" style="justify-content:center;margin-bottom:18px">${LOGO}<h1>${esc(APP_NAME)}</h1></div>
+  <form class="card" id="loginf"><label class="f">E-mail<input class="inp" type="email" name="email" autocomplete="username" required></label>
+  <label class="f">Mot de passe<input class="inp" type="password" name="pw" autocomplete="current-password" required></label>
+  ${err?`<p class="late small" style="margin-top:0">${esc(err)}</p>`:''}
+  <button class="btn primary" style="width:100%;justify-content:center">Se connecter</button>
+  <p class="small muted" style="margin:12px 0 0;text-align:center"><a href="#" id="forgot" style="color:inherit">Mot de passe oublié ?</a></p></form>
+  <div class="card" style="margin-top:14px"><b>Vous êtes une entreprise ?</b><p class="small muted" style="margin:4px 0 10px">Vous n'avez pas besoin de compte : utilisez le lien qui vous a été envoyé. Lien perdu ? Recevez-le à nouveau par e-mail.</p>${lostLinkForm()}</div></div>`;
+  bindLostLink();
+  $('#loginf').onsubmit=async e=>{e.preventDefault();const f=e.target;busy('Connexion…');const {error}=await Supa.sb.auth.signInWithPassword({email:f.email.value.trim(),password:f.pw.value});busy();
+    if(error)return renderLogin(/confirm/i.test(error.message)?'Adresse e-mail non confirmée.':'Identifiants incorrects.');location.reload()};
+  $('#forgot').onclick=async e=>{e.preventDefault();const em=$('#loginf').email.value.trim();if(!em)return toast('Saisissez d\'abord votre e-mail dans le champ ci-dessus');
+    busy('Envoi…');const {error}=await Supa.sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});busy();
+    if(error&&/rate|limit/i.test(error.message))return toast('Trop de demandes : réessayez dans quelques minutes.');
+    toast(error?'Envoi impossible : '+error.message:'Si ce compte existe, un e-mail de réinitialisation vient d\'être envoyé.')};
+}
+/* Entreprise : renvoi du lien d'accès par e-mail */
+const lostLinkForm=()=>`<form id="lostf" class="row"><input class="inp" style="flex:1;min-width:180px" type="email" name="em" placeholder="E-mail de l'entreprise" required><button class="btn">Recevoir mon lien</button></form><div id="lostmsg" class="small" style="margin-top:8px"></div>`;
+function bindLostLink(){const f=$('#lostf');if(!f)return;f.onsubmit=async e=>{e.preventDefault();const em=f.em.value.trim();busy('Envoi…');
+  let err=null;try{const r=await Supa.sb.functions.invoke('envoi-lien',{body:{email:em}});err=r.error}catch(x){err=x}busy();
+  $('#lostmsg').innerHTML=err?`<span class="late">Service d'envoi indisponible. Contactez le maître d'œuvre.</span>`:`✅ Si cette adresse correspond à une entreprise du chantier, un e-mail contenant son lien vient d'être envoyé (pensez aux courriers indésirables).`}}
+/* Équipe : nouveau mot de passe après le lien reçu par e-mail */
+function renderNewPassword(){
+  $('#app').innerHTML=`<div class="login"><div class="row" style="justify-content:center;margin-bottom:18px">${LOGO}<h1>${esc(APP_NAME)}</h1></div>
+  <form class="card" id="npf"><h2 style="margin-bottom:12px">Nouveau mot de passe</h2>${pwFields()}<button class="btn primary" style="width:100%;justify-content:center">Enregistrer</button></form></div>`;
+  $('#npf').onsubmit=async e=>{e.preventDefault();const pw=checkPw(e.target);if(!pw)return;busy('Enregistrement…');const {error}=await Supa.sb.auth.updateUser({password:pw});busy();
+    if(error)return toast('Erreur : '+error.message);S.recovering=false;history.replaceState(null,'',location.pathname);toast('Mot de passe modifié');setTimeout(()=>location.reload(),900)}}
+const pwFields=()=>`<label class="f">Nouveau mot de passe<input class="inp" type="password" name="p1" autocomplete="new-password" minlength="8" required></label><label class="f">Confirmez<input class="inp" type="password" name="p2" autocomplete="new-password" minlength="8" required></label><p class="small muted" style="margin-top:-4px">8 caractères minimum.</p>`;
+function checkPw(f){const a=f.p1.value,b=f.p2.value;if(a.length<8){toast('8 caractères minimum');return null}if(a!==b){toast('Les deux mots de passe sont différents');return null}return a}
+function openAccount(){openModal(`<div class="mh"><h2>Mon compte</h2><button class="x" data-act="close">×</button></div><div class="mb"><p class="small muted" style="margin-top:0">Connecté en tant que <b style="color:var(--ink)">${esc(S.user&&S.user.email||'')}</b></p>
+  <form id="cpf"><h3 style="margin-bottom:10px">Changer de mot de passe</h3>${pwFields()}<button class="btn primary">Enregistrer</button></form></div>
+  <div class="mf"><span class="sp"></span><button class="btn danger" data-act="logout">Se déconnecter</button></div>`);
+  $('#cpf').onsubmit=async e=>{e.preventDefault();const pw=checkPw(e.target);if(!pw)return;busy('Enregistrement…');const {error}=await Supa.sb.auth.updateUser({password:pw});busy();
+    if(error)return toast(/same|different/i.test(error.message)?'Choisissez un mot de passe différent de l\'actuel':'Erreur : '+error.message);closeModal();toast('Mot de passe modifié')}}
+function route(){const h=location.hash.slice(1);if(h.startsWith('p-')){const id=h.slice(2);if(id!==S.pid)openProject(id)}else if(S.pid){closeProject(true)}}
+function openProject(pid){
+  S.subs.forEach(u=>u());S.subs=[];S.pid=pid;S.tab='dash';S.companies=[];S.plans=[];S.issues=[];S.visits=[];S.actions=[];S.links={};S.planView=null;S.visitView=null;S.adding=false;S.placing=false;
+  try{S.activeVisit=localStorage.getItem('cdc_av_'+pid)||''}catch(e){S.activeVisit=''}
+  ['companies','plans','issues','visits','actions'].forEach(n=>S.subs.push(API.listen(P.coll(n),arr=>{S[n]=arr;render()})));
+  loadLinks();
+  if(location.hash!=='#p-'+pid)location.hash='p-'+pid;render();scrollTo(0,0)}
+async function loadLinks(){try{const l=await API.listLinks(S.pid);S.links={};l.forEach(x=>S.links[x.company_id]=x.token);render()}catch(e){}}
+function closeProject(fromHash){S.subs.forEach(u=>u());S.subs=[];S.pid=null;if(!fromHash)location.hash='projets';render()}
+
+/* ====================== Rendu ====================== */
+function render(){if(PT.active)return renderPortal();const app=$('#app');
+  const ps=$('.plan-scroll');const keep=ps?{l:ps.scrollLeft,t:ps.scrollTop}:null;
+  const fq=document.activeElement&&document.activeElement.id==='fq';
+  app.innerHTML=S.pid?viewProject():viewHome();
+  if(keep){const n=$('.plan-scroll');if(n){n.scrollLeft=keep.l;n.scrollTop=keep.t}}
+  if(fq){const q=$('#fq');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}}
+function banners(){let h='';
+  if(S.mode==='demo')h+=`<div class="banner">Mode démonstration : les données restent dans ce navigateur. Renseignez le fichier config.js pour passer en ligne.</div>`;
+  return h}
+const LOGO=`<span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10l7-6 7 6v11"/><path d="M10 21v-6h4v6"/></svg></span>`;
+function viewHome(){
+  const cards=S.projects.map(p=>`<div class="card proj" data-act="open-proj" data-id="${p.id}"><h3>${esc(p.name)}</h3><div class="muted small" style="margin-top:4px">${esc(p.address||'')}</div>
+    <div class="small" style="margin-top:10px">${p.moa?'MOA : '+esc(p.moa)+'<br>':''}${p.ref?'Réf. '+esc(p.ref):''}</div></div>`).join('');
+  return `<header class="top"><div class="brand">${LOGO}<span>${esc(APP_NAME)}</span></div>${S.mode==='online'?`<button class="icobtn txt" data-act="account">Mon compte</button>`:''}</header>${banners()}
+  <main class="wrap"><div class="row between" style="margin-bottom:16px"><h1>Mes projets</h1><button class="btn primary" data-act="new-proj">+ Nouveau projet</button></div>
+  ${S.projects.length?`<div class="grid g-proj">${cards}</div>`:`<div class="card empty"><div class="big">🏗️</div><h2 style="color:var(--ink)">Aucun projet pour l'instant</h2><p>Créez un projet, ajoutez vos plans et vos entreprises,<br>puis pointez les réserves directement sur les plans.</p><button class="btn primary" data-act="new-proj">Créer mon premier projet</button></div>`}</main>`}
+const TABS=[['dash','📊','Tableau de bord'],['plans','🗺️','Plans'],['issues','📍','Réserves'],['visits','📋','Réunions'],['companies','👷','Entreprises'],['reports','📄','Rapports']];
+function viewProject(){const p=curProj();const av=S.visits.find(v=>v.id===S.activeVisit);let body='';
+  switch(S.tab){case 'dash':body=viewDash();break;case 'plans':body=viewPlans();break;case 'issues':body=viewIssues();break;case 'visits':body=viewVisits();break;case 'companies':body=viewCompanies();break;case 'reports':body=viewReports();break}
+  return `<header class="top"><button class="icobtn" data-act="home" title="Projets">‹</button><div class="title">${esc(p.name)}</div><button class="icobtn" data-act="edit-proj" title="Paramètres du projet">⚙︎</button></header>
+  <nav class="tabs">${TABS.map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" data-act="tab" data-t="${t[0]}"><i>${t[1]}</i>${t[2]}</button>`).join('')}</nav>${banners()}
+  ${av?`<div class="banner info"><b>● En cours : ${esc(visitLabel(av))}</b><button class="btn sm" data-act="open-visit" data-id="${av.id}">Ouvrir</button><button class="btn sm" data-act="stop-visit">Terminer</button></div>`:''}
+  ${S.placing?`<div class="banner info"><b>Touchez le plan à l'endroit de la réserve${S.planView?'':' (choisissez d\'abord un plan)'}</b><button class="btn sm" data-act="cancel-place">Annuler</button></div>`:''}
+  <main class="wrap">${body}</main>
+  ${['dash','plans','issues','visits'].includes(S.tab)&&!S.placing?`<button class="fab" data-act="new-issue">+ Réserve</button>`:''}`}
+function counts(list){const c={afaire:0,encours:0,levee:0,validee:0,total:list.length,late:0};list.forEach(i=>{c[i.status]=(c[i.status]||0)+1;if(isLate(i))c.late++});return c}
+function actionRow(a){const v=S.visits.find(x=>x.id===a.visitId);return `<div class="act ${a.status==='faite'?'done':''}"><button class="cb ${a.status==='faite'?'on':''}" data-act="act-toggle" data-id="${a.id}" title="Fait / à faire">${a.status==='faite'?'✓':''}</button>
+  <div class="body"><div class="tx">${esc(a.text)}</div><div class="small muted"><b style="color:var(--ink)">${esc(actWho(a))}</b>${a.due?` · <span class="${actLate(a)?'late':''}">pour le ${fmtDate(a.due)}${actLate(a)?' (retard)':''}</span>`:''}${v?' · '+esc(visitLabel(v)):''}${a.status==='faite'&&a.doneBy==='entreprise'?' · <i>signalée faite par l\'entreprise</i>':''}</div></div>
+  <button class="btn sm" data-act="act-edit" data-id="${a.id}">✎</button></div>`}
+function viewDash(){const c=counts(S.issues);const pct=c.total?Math.round((c.levee+c.validee)/c.total*100):0;
+  const rows=comps().map(co=>({co,k:counts(S.issues.filter(i=>i.companyId===co.id))}));const un=S.issues.filter(i=>!comp(i.companyId));if(un.length)rows.push({co:{name:'Non affectée',lot:''},k:counts(un)});
+  const openA=S.actions.filter(a=>a.status!=='faite').sort((a,b)=>(a.due||'9').localeCompare(b.due||'9'));const lateA=openA.filter(actLate).length;
+  const toValidate=S.issues.filter(i=>i.status==='levee');const p=curProj();
+  const last=[...S.visits].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  return `<div class="row between" style="margin-bottom:14px"><div><h1>${esc(p.name)}</h1><div class="muted small">${esc(p.address||'')}</div></div><button class="btn dark" data-act="new-visit">▶ Nouvelle réunion</button></div>
+  <div class="grid stats"><div class="card stat"><div class="n">${c.total}</div><div class="l">Réserves</div></div>
+   ${Object.keys(STATUS).map(s=>`<div class="card stat" data-act="goto-st" data-s="${s}" style="cursor:pointer"><div class="n" style="color:${STATUS[s].c}">${c[s]}</div><div class="l">${s==='levee'?'Levées à valider':STATUS[s].l}</div></div>`).join('')}
+   <div class="card stat"><div class="n" style="color:#c92a2a">${c.late}</div><div class="l">Réserves en retard</div></div>
+   <div class="card stat"><div class="n">${openA.length}</div><div class="l">Actions ouvertes${lateA?` · <span class="late">${lateA} en retard</span>`:''}</div></div></div>
+  <div class="card" style="margin-top:12px"><div class="row between small" style="margin-bottom:8px"><b>Avancement de la levée des réserves</b><span>${pct} %</span></div>
+   <div class="bar">${Object.keys(STATUS).map(s=>c.total?`<span style="width:${c[s]/c.total*100}%;background:${STATUS[s].c}"></span>`:'').join('')}</div>
+   <div class="row small muted" style="margin-top:8px;gap:14px">${Object.keys(STATUS).map(s=>`<span><span class="dot" style="background:${STATUS[s].c}"></span> ${STATUS[s].l}</span>`).join('')}</div></div>
+  ${toValidate.length?`<div class="section-t"><h2>Levées à valider (${toValidate.length})</h2></div><div class="grid">${toValidate.slice(0,5).map(issueCard).join('')}</div>${toValidate.length>5?`<button class="btn sm" style="margin-top:8px" data-act="goto-st" data-s="levee">Tout voir</button>`:''}`:''}
+  ${last&&(last.keypoints||[]).length?`<div class="section-t"><h2>À retenir – dernière réunion</h2><button class="btn sm" data-act="open-visit" data-id="${last.id}">Ouvrir</button></div><div class="card">${kpList(last,false)}</div>`:''}
+  <div class="section-t"><h2>Actions à suivre</h2><button class="btn sm" data-act="act-new">+ Action</button></div>
+  <div class="card">${openA.length?openA.slice(0,8).map(actionRow).join(''):'<div class="muted small">Aucune action ouverte.</div>'}</div>
+  <div class="section-t"><h2>Par entreprise</h2></div>
+  ${rows.length?`<div class="card tscroll"><table class="t"><thead><tr><th>Entreprise</th>${Object.keys(STATUS).map(s=>`<th class="n">${STATUS[s].l}</th>`).join('')}<th class="n">Retard</th><th class="n">Total</th></tr></thead><tbody>
+   ${rows.map(r=>`<tr ${r.co.id?`data-act="goto-co" data-id="${r.co.id}" style="cursor:pointer"`:''}><td><b>${esc(r.co.name)}</b><div class="muted small">${esc(r.co.lot||'')}</div></td>${Object.keys(STATUS).map(s=>`<td class="n" style="color:${r.k[s]?STATUS[s].c:'#bbb'};font-weight:600">${r.k[s]}</td>`).join('')}<td class="n ${r.k.late?'late':''}">${r.k.late}</td><td class="n"><b>${r.k.total}</b></td></tr>`).join('')}
+   </tbody></table></div>`:`<div class="card empty">Ajoutez des entreprises dans l'onglet « Entreprises ».</div>`}`}
+/* ----- Plans ----- */
+function viewPlans(){if(S.planView){const pl=S.plans.find(p=>p.id===S.planView);if(pl)return viewPlan(pl);S.planView=null}
+  return `<div class="row between" style="margin-bottom:14px"><h1>Plans</h1><label class="btn primary">+ Ajouter des plans<input type="file" accept="image/*,application/pdf" multiple data-file="plan" hidden></label></div>
+  ${S.plans.length?`<div class="grid g-plans">${[...S.plans].sort((a,b)=>(a.name||'').localeCompare(b.name||'','fr',{numeric:true})).map(p=>{const n=S.issues.filter(i=>i.planId===p.id);const open=n.filter(i=>i.status==='afaire'||i.status==='encours').length;
+    return `<div class="card plancard" data-act="open-plan" data-id="${p.id}"><div class="im" style="background-image:url('${esc(imgSrc(p.img))}')"></div><div class="cap"><b>${esc(p.name)}</b><div class="small muted">${n.length} réserve(s) · ${open} ouverte(s)</div></div></div>`}).join('')}</div>`
+  :`<div class="card empty"><div class="big">🗺️</div>Importez vos plans (image ou PDF : chaque page devient un plan).<br>Vous pourrez ensuite y placer les réserves.</div>`}`}
+function viewPlan(pl){const st=S.f.status;const pins=S.issues.filter(i=>i.planId===pl.id&&i.x!=null&&(!st||i.status===st)).sort((a,b)=>a.num-b.num);
+  return `<div class="pv-bar"><button class="btn sm" data-act="close-plan">‹ Plans</button><b style="flex:1;min-width:120px">${esc(pl.name)}</b>
+  <select class="inp" style="width:auto;padding:6px 8px" data-filter="status"><option value="">Tous statuts</option>${Object.keys(STATUS).map(s=>`<option value="${s}" ${st===s?'selected':''}>${STATUS[s].l}</option>`).join('')}</select>
+  <button class="btn sm" data-act="zoom" data-z="-1">−</button><span class="small">${Math.round(S.zoom*100)}%</span><button class="btn sm" data-act="zoom" data-z="1">+</button>
+  ${S.placing?'':`<button class="btn sm toggle ${S.adding?'on':''}" data-act="toggle-add">${S.adding?'✓ Touchez le plan':'📍 Ajouter sur le plan'}</button>`}<button class="btn sm" data-act="edit-plan" data-id="${pl.id}">⋯</button></div>
+  <div class="plan-scroll"><div class="plan-inner ${S.adding||S.placing?'adding':''}" style="width:${S.zoom*100}%" data-act="plan-tap" data-id="${pl.id}"><img src="${esc(imgSrc(pl.img))}" alt="${esc(pl.name)}" draggable="false">
+  ${pins.map(i=>`<button class="pin" style="left:${i.x*100}%;top:${i.y*100}%;background:${STATUS[i.status].c}" data-act="open-issue" data-id="${i.id}" title="${esc(i.title)}">${i.num}</button>`).join('')}</div></div>
+  <div class="small muted" style="margin-top:6px">${pins.length} réserve(s) affichée(s).${S.adding?' Mode ajout actif : chaque appui crée une réserve.':''}</div>`}
+/* ----- Réserves ----- */
+function filtered(){const f=S.f,q=f.q.trim().toLowerCase();return S.issues.filter(i=>(!f.status||i.status===f.status)&&(!f.company||(f.company==='none'?!comp(i.companyId):i.companyId===f.company))&&(!f.plan||i.planId===f.plan)
+  &&(!q||[i.title,i.desc,i.loc,String(i.num),compLabel(i.companyId)].join(' ').toLowerCase().includes(q))).sort((a,b)=>b.num-a.num)}
+function issueCard(i){const ph=(i.photos||[])[0];const late=isLate(i);
+  return `<div class="card issue" data-act="open-issue" data-id="${i.id}"><div class="thumb" style="${ph?`background-image:url('${esc(imgSrc(ph))}')`:''}">${ph?'':'📍'}</div>
+  <div class="body"><div class="ttl"><span class="num" style="background:${STATUS[i.status].c}">${i.num}</span>${esc(i.title)}</div>
+  <div class="small muted" style="margin-top:3px">${esc(compLabel(i.companyId))}${i.loc?' · '+esc(i.loc):''}${i.planId?' · '+esc(planName(i.planId)):''}</div>
+  <div class="small" style="margin-top:3px"><span class="chip" style="background:${STATUS[i.status].c}">${STATUS[i.status].l}${i.status==='levee'&&i.liftedBy==='entreprise'?' par l\'entreprise':''}</span> ${i.due?`<span class="${late?'late':'muted'}">· Échéance ${fmtDate(i.due)}${late?' (retard)':''}</span>`:''} ${i.prio==='haute'||i.prio==='urgente'?`<span class="late">· ${PRIO[i.prio]}</span>`:''}</div></div></div>`}
+function issueList(){const l=filtered();return l.length?`<div class="grid">${l.map(issueCard).join('')}</div>`:`<div class="card empty">${S.issues.length?'Aucune réserve ne correspond aux filtres.':'Aucune réserve. Appuyez sur « + Réserve » pour commencer.'}</div>`}
+function viewIssues(){const f=S.f;return `<div class="row between" style="margin-bottom:12px"><h1>Réserves <span class="muted" style="font-weight:500" id="icount">${filtered().length}</span></h1>${(f.q||f.status||f.company||f.plan)?`<button class="btn sm" data-act="clear-f">Effacer les filtres</button>`:''}</div>
+  <div class="filters"><input class="inp" id="fq" placeholder="Rechercher (titre, n°, localisation…)" value="${esc(f.q)}" data-filter="q">
+  <select class="inp" data-filter="status"><option value="">Tous les statuts</option>${Object.keys(STATUS).map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${STATUS[s].l}</option>`).join('')}</select>
+  <select class="inp" data-filter="company"><option value="">Toutes les entreprises</option>${comps().map(c=>`<option value="${c.id}" ${f.company===c.id?'selected':''}>${esc((c.lot?c.lot+' – ':'')+c.name)}</option>`).join('')}<option value="none" ${f.company==='none'?'selected':''}>Non affectées</option></select>
+  <select class="inp" data-filter="plan"><option value="">Tous les plans</option>${S.plans.map(p=>`<option value="${p.id}" ${f.plan===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div id="issue-list">${issueList()}</div>`}
+/* ----- Réunions ----- */
+function visitCard(v){const n=S.issues.filter(i=>i.visitId===v.id).length;const pres=S.companies.filter(c=>attOf(v,c.id).p==='present').length;const kp=(v.keypoints||[]).length;
+  return `<div class="card issue" data-act="open-visit" data-id="${v.id}"><div class="thumb" style="font-size:20px;color:var(--ink)">${v.id===S.activeVisit?'🟠':'📋'}</div><div class="body"><div class="ttl">${esc(visitLabel(v))}</div><div class="small muted">${pres} entreprise(s) présente(s) · ${kp} point(s) clé(s) · ${n} réserve(s)${v.signatures&&v.signatures.length?' · signé':''}</div></div></div>`}
+function viewVisits(){if(S.visitView){const v=S.visits.find(x=>x.id===S.visitView);if(v)return viewVisit(v);S.visitView=null}
+  const l=[...S.visits].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(+b.num||0)-(+a.num||0));
+  return `<div class="row between" style="margin-bottom:14px"><h1>Réunions & visites</h1><button class="btn primary" data-act="new-visit">+ Nouvelle</button></div>
+  ${l.length?`<div class="grid">${l.map(visitCard).join('')}</div>`:`<div class="card empty"><div class="big">📋</div>Créez une réunion de chantier, une visite, des OPR ou une réception.<br>Notez les points clés, les décisions et les actions, puis éditez le PV.</div>`}`}
+function kpList(v,editable){const kps=v.keypoints||[];if(!kps.length)return `<div class="muted small">Aucun point clé pour l'instant.</div>`;
+  const order=Object.keys(KP);return [...kps].map((k,idx)=>({k,idx})).sort((a,b)=>order.indexOf(a.k.type)-order.indexOf(b.k.type)).map(({k,idx})=>{const t=KP[k.type]||KP.info;
+    return `<div class="kp" style="background:${t.bg};border-color:${t.c}33"><span class="tag" style="background:${t.c}">${t.l}</span><div class="tx">${esc(k.text)}</div>${editable?`<button data-act="kp-del" data-k="${idx}" title="Supprimer">✕</button>`:''}</div>`}).join('')}
+function viewVisit(v){const iss=S.issues.filter(i=>i.visitId===v.id).sort((a,b)=>a.num-b.num);const att=comps().filter(c=>attOf(v,c.id).p);
+  const acts=S.actions.filter(a=>a.status!=='faite'||a.visitId===v.id).sort((a,b)=>(a.status==='faite')-(b.status==='faite')||(a.due||'9').localeCompare(b.due||'9'));
+  return `<div class="row" style="margin-bottom:12px"><button class="btn sm" data-act="close-visit">‹ Réunions</button><span class="sp"></span>
+   ${v.id===S.activeVisit?`<button class="btn sm" data-act="stop-visit">Terminer</button>`:`<button class="btn sm dark" data-act="start-visit" data-id="${v.id}">▶ Rendre active</button>`}
+   <button class="btn sm" data-act="edit-visit" data-id="${v.id}">Modifier</button><button class="btn sm" data-act="next-visit" data-id="${v.id}">⏭ Préparer la suivante</button><button class="btn sm primary" data-act="pv-visit" data-id="${v.id}">📄 PV PDF</button></div>
+  <div class="card"><h2>${esc(visitLabel(v))}</h2><dl class="kv" style="margin-top:12px"><dt>Date</dt><dd>${fmtDate(v.date)}</dd>${v.weather?`<dt>Météo</dt><dd>${esc(v.weather)}</dd>`:''}${v.nextDate?`<dt>Prochaine réunion</dt><dd>${fmtDate(v.nextDate)}</dd>`:''}${v.others?`<dt>Autres présents</dt><dd>${esc(v.others)}</dd>`:''}</dl>
+   ${v.notes?`<h3 style="margin-top:14px">Observations générales</h3><p style="white-space:pre-wrap;margin:6px 0 0">${esc(v.notes)}</p>`:''}</div>
+  <div class="section-t"><h2>⭐ Points clés à retenir</h2></div>
+  <div class="card">${kpList(v,true)}<div class="addline"><select class="inp" id="kp-type">${Object.keys(KP).map(k=>`<option value="${k}">${KP[k].l}</option>`).join('')}</select><input class="inp" id="kp-text" placeholder="Ex. : Validation du choix de carrelage C2"><button class="btn sm primary" data-act="kp-add">Ajouter</button>${SR?`<button class="mic" data-act="mic" data-target="kp-text">🎙</button>`:''}</div></div>
+  <div class="section-t"><h2>✅ Actions à mener</h2></div>
+  <div class="card">${acts.length?acts.map(actionRow).join(''):'<div class="muted small">Aucune action.</div>'}
+   <div class="actform"><input class="inp" id="af-text" placeholder="Action à mener…"><select class="inp" id="af-co"><option value="">Responsable…</option>${comps().map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}<option value="__moe">Maîtrise d'œuvre</option><option value="__moa">Maître d'ouvrage</option></select><input class="inp" type="date" id="af-due"><button class="btn sm primary" data-act="act-quick" data-visit="${v.id}">Ajouter</button></div></div>
+  ${att.length?`<div class="section-t"><h2>Présences & avancement</h2></div><div class="card tscroll"><table class="t"><thead><tr><th>Entreprise</th><th>Présence</th><th class="n">Effectif</th><th class="n">Avanc.</th></tr></thead><tbody>${att.map(c=>{const a=attOf(v,c.id);return `<tr><td><b>${esc(c.name)}</b><div class="small muted">${esc(c.lot||'')}</div></td><td>${PRESENCE[a.p]||''}</td><td class="n">${a.n||''}</td><td class="n">${a.av!=null&&a.av!==''?a.av+' %':''}</td></tr>`}).join('')}</tbody></table></div>`:''}
+  <div class="section-t"><h2>📍 Réserves relevées (${iss.length})</h2></div>
+  ${iss.length?`<div class="grid">${iss.map(issueCard).join('')}</div>`:`<div class="card empty">Aucune réserve rattachée. Rendez la réunion active puis ajoutez des réserves.</div>`}
+  <div class="section-t"><h2>✍️ Signatures</h2><button class="btn sm" data-act="sign" data-id="${v.id}">+ Faire signer</button></div>
+  <div class="card">${(v.signatures||[]).length?`<div class="sigs">${v.signatures.map((s,k)=>`<div class="sig"><img src="${esc(s.img)}"><b>${esc(s.name)}</b><div class="muted">${esc(s.role||'')} · ${fmtDT(s.t)}</div><button data-act="sig-del" data-k="${k}">✕</button></div>`).join('')}</div>`:'<div class="muted small">Aucune signature. Utile pour les OPR, la réception ou un PV contradictoire.</div>'}</div>`}
+/* ----- Entreprises ----- */
+function viewCompanies(){return `<div class="row between" style="margin-bottom:14px"><h1>Entreprises</h1><button class="btn primary" data-act="new-co">+ Ajouter</button></div>
+  ${S.companies.length?`<div class="grid">${comps().map(c=>{const k=counts(S.issues.filter(i=>i.companyId===c.id));const oa=S.actions.filter(a=>a.companyId===c.id&&a.status!=='faite').length;
+   return `<div class="card"><div class="issue" style="padding:0" data-act="edit-co" data-id="${c.id}"><div class="thumb" style="font-size:20px;color:var(--ink)">👷</div><div class="body"><div class="ttl">${esc(c.name)}</div><div class="small muted">${esc(c.lot||'Lot non précisé')}${c.contact?' · '+esc(c.contact):''}</div><div class="small muted">${c.phone?esc(c.phone)+' ':''}${c.email?esc(c.email):''}</div></div>
+   <div class="small" style="text-align:right"><b style="color:${STATUS.afaire.c}">${k.afaire+k.encours}</b> à lever<br><span style="color:${STATUS.levee.c}">${k.levee} à valider</span><br><span class="muted">${oa} action(s)</span></div></div>
+   <div class="row" style="margin-top:10px"><button class="btn sm" data-act="relance" data-id="${c.id}">✉️ Relancer</button><button class="btn sm" data-act="co-link" data-id="${c.id}">🔗 ${S.links[c.id]?'Lien d\'accès':'Créer un lien d\'accès'}</button></div></div>`}).join('')}</div>`
+  :`<div class="card empty"><div class="big">👷</div>Ajoutez les entreprises intervenant sur le chantier.<br>Chacune pourra recevoir un lien personnel pour consulter et lever ses réserves, sans créer de compte.</div>`}`}
+/* ----- Rapports ----- */
+function viewReports(){const R=S.rep;const vs=[...S.visits].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  return `<h1 style="margin-bottom:14px">Rapports</h1><div class="card">
+  <label class="f">Type de document<select class="inp" data-rep="type"><option value="reserves" ${R.type==='reserves'?'selected':''}>Rapport des réserves (état actuel)</option><option value="pv" ${R.type==='pv'?'selected':''}>Procès-verbal de réunion / visite</option></select></label>
+  ${R.type==='pv'?`<label class="f">Réunion<select class="inp" data-rep="visitId"><option value="">— choisir —</option>${vs.map(v=>`<option value="${v.id}" ${R.visitId===v.id?'selected':''}>${esc(visitLabel(v))}</option>`).join('')}</select></label>`:''}
+  <label class="f">Entreprise<select class="inp" data-rep="companyId"><option value="">Toutes les entreprises</option>${comps().map(c=>`<option value="${c.id}" ${R.companyId===c.id?'selected':''}>${esc((c.lot?c.lot+' – ':'')+c.name)}</option>`).join('')}</select></label>
+  <div class="fld"><span>Statuts inclus</span>${Object.keys(STATUS).map(s=>`<label class="chk"><input type="checkbox" data-rep-st="${s}" ${R.st[s]?'checked':''}><span class="dot" style="background:${STATUS[s].c}"></span>${STATUS[s].l}</label>`).join('')}</div>
+  <div class="fld"><span>Contenu</span><label class="chk"><input type="checkbox" data-rep-b="plans" ${R.plans?'checked':''}>Plans avec les réserves pointées</label><label class="chk"><input type="checkbox" data-rep-b="photos" ${R.photos?'checked':''}>Photos des réserves</label></div>
+  <div class="row" style="margin-top:6px"><button class="btn primary" data-act="gen-pdf">📄 Générer le PDF</button><button class="btn" data-act="export-csv">⬇︎ Export Excel (CSV)</button><button class="btn" data-act="copy-sum">📋 Copier le récapitulatif</button></div></div>`}
+
+/* ====================== Modales ====================== */
+function openModal(html,wide){$('#modal-root').innerHTML=`<div class="ov"><div class="sheet ${wide?'wide':''}">${html}</div></div>`}
+function closeModal(){if(REC)REC.stop();$('#modal-root').innerHTML='';S.draft=null;S.draftKind=null}
+function ask(msg,okLabel,withInput){return new Promise(res=>{const r=$('#confirm-root');r.innerHTML=`<div class="ov" style="z-index:60"><div class="sheet" style="max-width:440px"><div class="mb"><p style="margin:4px 0 10px">${esc(msg)}</p>${withInput?`<textarea class="inp" id="ask-in" rows="3" placeholder="${esc(withInput)}"></textarea>`:''}</div><div class="mf"><span class="sp"></span><button class="btn" data-c="0">Annuler</button><button class="btn primary" data-c="1">${esc(okLabel||'Confirmer')}</button></div></div></div>`;
+  r.onclick=e=>{const b=e.target.closest('[data-c]');if(b){const v=withInput?($('#ask-in').value||'').trim():true;r.innerHTML='';r.onclick=null;res(b.dataset.c==='1'?v:false)}}})}
+function rerenderModal(fn){const mb=$('#modal-root .mb');const t=mb?mb.scrollTop:0;fn();const n=$('#modal-root .mb');if(n)n.scrollTop=t}
+const field=(label,f,val,type,extra)=>`<label class="f">${label}<input class="inp" data-f="${f}" type="${type||'text'}" value="${esc(val||'')}" ${extra||''}></label>`;
+
+/* Projet */
+function editProject(p){S.draftKind='proj';S.draft=Object.assign({name:'',address:'',moa:'',moe:'',ref:''},p||{});const D=S.draft;
+  openModal(`<div class="mh"><h2>${D.id?'Paramètres du projet':'Nouveau projet'}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  ${field('Nom du projet *','name',D.name,'text','placeholder="Ex. : Résidence Les Tilleuls – 24 logements"')}${field('Adresse du chantier','address',D.address)}
+  <div class="g2">${field("Maître d'ouvrage",'moa',D.moa)}${field("Architecte / Maître d'œuvre",'moe',D.moe||CFG.companyName||'')}</div>${field("Référence / n° d'affaire",'ref',D.ref)}</div>
+  <div class="mf">${D.id?'<button class="btn danger" data-act="del-proj">Supprimer le projet</button>':''}<span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" data-act="save-proj">Enregistrer</button></div>`)}
+async function saveProject(){const D=S.draft;if(!D.name.trim())return toast('Le nom est obligatoire');const isNew=!D.id;const id=D.id||uid();const {id:_,...data}=D;if(isNew)data.createdAt=Date.now();
+  try{await API.set('projects/'+id,data);closeModal();if(isNew)openProject(id)}catch(e){handleErr(e)}}
+async function deleteProject(){if(!await ask('Supprimer définitivement ce projet et toutes ses données (plans, réserves, réunions, entreprises) ?','Supprimer'))return;
+  busy('Suppression…');try{await API.delProject(S.pid);closeModal();closeProject()}catch(e){handleErr(e)}busy()}
+
+/* Entreprise */
+function editCompany(c){S.draftKind='co';S.draft=Object.assign({lot:'',name:'',contact:'',email:'',phone:''},c||{});const D=S.draft;
+  openModal(`<div class="mh"><h2>${D.id?'Entreprise':'Nouvelle entreprise'}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  ${field('Raison sociale *','name',D.name)}${field('Lot','lot',D.lot,'text','list="lots" placeholder="Ex. : Gros œuvre"')}<datalist id="lots">${LOTS.map(l=>`<option value="${esc(l)}">`).join('')}</datalist>
+  ${field('Interlocuteur','contact',D.contact)}<div class="g2">${field('E-mail','email',D.email,'email')}${field('Téléphone','phone',D.phone,'tel')}</div></div>
+  <div class="mf">${D.id?'<button class="btn danger" data-act="del-co">Supprimer</button>':''}<span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" data-act="save-co">Enregistrer</button></div>`)}
+async function saveCompany(){const D=S.draft;if(!D.name.trim())return toast('Le nom est obligatoire');const id=D.id||uid();const {id:_,...data}=D;try{await API.set(P.doc('companies',id),data);closeModal()}catch(e){handleErr(e)}}
+async function deleteCompany(){const D=S.draft;const n=S.issues.filter(i=>i.companyId===D.id).length;if(!await ask(`Supprimer l'entreprise « ${D.name} » ?${n?` Ses ${n} réserve(s) deviendront « non affectées ».`:''}`,'Supprimer'))return;
+  try{if(S.links[D.id])await API.revokeLink(S.links[D.id]);await API.del(P.doc('companies',D.id));closeModal();loadLinks()}catch(e){handleErr(e)}}
+function openCoLink(cid){const c=comp(cid);if(!c)return;const t=S.links[cid];
+  if(S.mode!=='online'){openModal(`<div class="mh"><h2>Lien d'accès</h2><button class="x" data-act="close">×</button></div><div class="mb"><p>Les liens d'accès des entreprises fonctionnent une fois l'application reliée à sa base de données en ligne (fichier config.js).</p></div>`);return}
+  openModal(`<div class="mh"><h2>Accès – ${esc(c.name)}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  <p class="small" style="margin-top:0">Avec ce lien, l'entreprise voit <b>uniquement ses réserves</b> sur ce projet : elle peut ajouter photos et commentaires, déclarer une réserve levée et télécharger son PDF. Aucun compte n'est nécessaire.</p>
+  ${t?`<div class="linkbox" id="lk">${esc(linkUrl(t))}</div><div class="row"><button class="btn sm primary" data-act="lk-copy" data-t="${t}">Copier le lien</button>${c.email?`<button class="btn sm" data-act="lk-send" data-t="${t}" data-id="${cid}">✉️ Envoyer à ${esc(c.email)}</button>`:`<span class="small muted">Ajoutez l'e-mail de l'entreprise pour l'envoi automatique.</span>`}<span class="sp"></span><button class="btn sm danger" data-act="lk-revoke" data-id="${cid}">Désactiver le lien</button></div>
+  <p class="small muted">Si l'entreprise perd son lien, elle peut le recevoir à nouveau depuis la page de connexion (« Vous êtes une entreprise ? ») avec l'e-mail renseigné ici.</p>`
+  :`<button class="btn primary" data-act="lk-create" data-id="${cid}">Créer le lien d'accès</button>`}</div>`)}
+const mailto=(to,subj,body)=>'mailto:'+encodeURIComponent(to||'')+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
+function relanceText(cid){const c=comp(cid)||{};const p=curProj();const l=S.issues.filter(i=>i.companyId===cid&&(i.status==='afaire'||i.status==='encours')).sort((a,b)=>a.num-b.num);
+  const acts=S.actions.filter(a=>a.companyId===cid&&a.status!=='faite');
+  let t=`Bonjour${c.contact?' '+c.contact:''},\n\nSur le chantier « ${p.name} »${p.address?' ('+p.address+')':''}, ${l.length} réserve(s) restent à lever par votre entreprise :\n\n`;
+  l.forEach(i=>{t+=`• n°${i.num} – ${i.title}${i.loc?' – '+i.loc:''}${i.due?' (échéance '+fmtDate(i.due)+(isLate(i)?', DÉPASSÉE':'')+')':''}\n`});
+  if(acts.length){t+=`\nActions attendues :\n`;acts.forEach(a=>{t+=`• ${a.text}${a.due?' (pour le '+fmtDate(a.due)+')':''}\n`})}
+  if(S.links[cid])t+=`\nVous pouvez consulter le détail, ajouter des photos et déclarer les levées ici :\n${linkUrl(S.links[cid])}\n`;
+  t+=`\nMerci de nous indiquer vos dates d'intervention.\n\nCordialement,\n${p.moe||CFG.companyName||''}`;return t}
+function openRelance(cid){const c=comp(cid)||{};const t=relanceText(cid);S.draftKind='relance';S.draft={t};
+  openModal(`<div class="mh"><h2>Relance – ${esc(c.name)}</h2><button class="x" data-act="close">×</button></div><div class="mb"><textarea class="inp" rows="14" id="rl-t">${esc(t)}</textarea>
+  ${!S.links[cid]&&S.mode==='online'?`<p class="small muted">Astuce : créez un lien d'accès pour que l'entreprise puisse lever ses réserves en ligne.</p>`:''}</div>
+  <div class="mf"><span class="sp"></span><button class="btn" data-act="rl-copy">Copier</button><a class="btn primary" id="rl-mail" href="${mailto(c.email,'Réserves à lever – '+curProj().name,t)}">✉️ Ouvrir ma messagerie</a></div>`);
+  $('#rl-t').addEventListener('input',e=>{$('#rl-mail').href=mailto(c.email,'Réserves à lever – '+curProj().name,e.target.value)})}
+
+/* Plan */
+function editPlan(pl){S.draftKind='plan';S.draft=Object.assign({},pl);
+  openModal(`<div class="mh"><h2>Plan</h2><button class="x" data-act="close">×</button></div><div class="mb">${field('Nom du plan','name',pl.name)}</div>
+  <div class="mf"><button class="btn danger" data-act="del-plan">Supprimer le plan</button><span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" data-act="save-plan">Enregistrer</button></div>`)}
+async function addPlans(files){let added=0;
+  try{for(const f of files){const base=f.name.replace(/\.[^.]+$/,'');
+    if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){busy('Lecture du PDF…');const {blobs,total}=await pdfToBlobs(f,30);if(total>30)toast('Seules les 30 premières pages ont été importées.');
+      for(let k=0;k<blobs.length;k++){busy('Enregistrement du plan '+(k+1)+'/'+blobs.length+'…');const img=await storeImage(blobs[k],'plan');await API.set(P.doc('plans',uid()),{name:blobs.length>1?base+' – p.'+(k+1):base,img,createdAt:Date.now()});added++}}
+    else{busy('Enregistrement du plan…');const img=await storeImage(f,'plan');await API.set(P.doc('plans',uid()),{name:base,img,createdAt:Date.now()});added++}}
+  }catch(e){handleErr(e)}busy();if(added)toast(added+' plan(s) ajouté(s)')}
+
+/* Réserve */
+function newIssue(extra){return Object.assign({title:'',desc:'',companyId:S.f.company&&S.f.company!=='none'?S.f.company:'',loc:'',status:'afaire',prio:'normale',due:'',visitId:S.activeVisit||'',planId:'',x:null,y:null,photos:[],history:[]},extra||{})}
+function editIssue(D){S.draftKind='issue';S.draft=D;rerenderModal(renderIssueModal)}
+function renderIssueModal(){const D=S.draft;const pl=S.plans.find(p=>p.id===D.planId);const orig=D.id?S.issues.find(i=>i.id===D.id):null;
+  openModal(`<div class="mh"><h2>${D.id?'Réserve n°'+D.num:'Nouvelle réserve'}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  ${orig&&orig.status==='levee'?`<div class="validate"><b>Levée déclarée${orig.liftedBy==='entreprise'?' par l\'entreprise':''}${orig.liftedAt?' le '+fmtDate(orig.liftedAt):''}.</b> Vérifiez sur place ou sur photo, puis :<div class="row" style="margin-top:8px"><button class="btn sm green" data-act="d-validate">✔ Valider la levée</button><button class="btn sm danger" data-act="d-refuse">✖ Refuser</button></div></div>`:''}
+  ${field('Intitulé *','title',D.title,'text','placeholder="Ex. : Éclat sur huisserie de porte"')}
+  <label class="f">Description ${mic('d-desc')}<textarea class="inp" rows="3" id="d-desc" data-f="desc" placeholder="Détails, travaux à réaliser…">${esc(D.desc)}</textarea></label>
+  <div class="g2"><label class="f">Entreprise / lot<select class="inp" data-f="companyId"><option value="">— Non affectée —</option>${comps().map(c=>`<option value="${c.id}" ${D.companyId===c.id?'selected':''}>${esc((c.lot?c.lot+' – ':'')+c.name)}</option>`).join('')}</select></label>
+  ${field('Localisation','loc',D.loc,'text','placeholder="Bât. A – R+1 – Logt 12"')}</div>
+  <div class="fld"><span>Statut</span><div class="seg">${Object.keys(STATUS).map(s=>`<button data-act="d-status" data-s="${s}" style="${D.status===s?`background:${STATUS[s].c};border-color:${STATUS[s].c};color:#fff`:''}">${STATUS[s].l}</button>`).join('')}</div></div>
+  <div class="g2"><label class="f">Priorité<select class="inp" data-f="prio">${Object.keys(PRIO).map(k=>`<option value="${k}" ${D.prio===k?'selected':''}>${PRIO[k]}</option>`).join('')}</select></label>${field('Échéance','due',D.due,'date')}</div>
+  <label class="f">Réunion / visite<select class="inp" data-f="visitId"><option value="">—</option>${[...S.visits].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(v=>`<option value="${v.id}" ${D.visitId===v.id?'selected':''}>${esc(visitLabel(v))}</option>`).join('')}</select></label>
+  <div class="fld"><span>Emplacement sur plan</span><div class="row"><select class="inp" style="flex:1;min-width:160px" data-f="planId"><option value="">— Aucun plan —</option>${S.plans.map(p=>`<option value="${p.id}" ${D.planId===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
+   ${S.plans.length?`<button class="btn sm" data-act="d-place">📍 ${D.x!=null&&pl?'Déplacer':'Placer'} sur le plan</button>`:''}</div>
+   ${pl&&D.x!=null?`<div class="mini" data-act="d-place"><img src="${esc(imgSrc(pl.img))}"><span class="pin" style="left:${D.x*100}%;top:${D.y*100}%;background:${STATUS[D.status].c}">${D.num||'+'}</span></div>`:''}</div>
+  <div class="fld"><span>Photos (✎ pour annoter, touchez pour agrandir)</span><div class="photos">${(D.photos||[]).map((p,k)=>`<div class="ph" style="background-image:url('${esc(imgSrc(p))}')" data-act="zoom-img" data-src="${esc(imgSrc(p))}"><button class="rm" data-act="d-rmph" data-k="${k}" title="Retirer">✕</button><button class="ed" data-act="d-annot" data-k="${k}" title="Annoter">✎</button></div>`).join('')}
+   <label class="addph">📷<br>Ajouter<input type="file" accept="image/*" multiple data-file="photo"></label></div></div>
+  <div class="fld"><span>Historique & commentaires</span>${(D.history||[]).length?`<div class="hist">${D.history.map(h=>`<div>${esc(h.txt)} <small>— ${fmtDT(h.t)}</small></div>`).join('')}</div>`:''}
+   <div class="row"><input class="inp" style="flex:1" id="cmt" placeholder="Ajouter un commentaire…"><button class="btn sm" data-act="d-cmt">Ajouter</button></div></div></div>
+  <div class="mf">${D.id?'<button class="btn danger" data-act="d-del">Supprimer</button>':''}<span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" data-act="d-save">Enregistrer</button></div>`)}
+async function saveIssue(){const D=S.draft;if(!D.title.trim())return toast("L'intitulé est obligatoire");
+  const isNew=!D.id;const now=Date.now();const data=JSON.parse(JSON.stringify(D));delete data.id;data.history=data.history||[];
+  if(isNew){data.num=Math.max(0,...S.issues.map(i=>i.num||0))+1;data.createdAt=now;data.history.unshift({t:now,txt:'Réserve créée'})}
+  else{const old=S.issues.find(i=>i.id===D.id);if(old&&old.status!==D.status){data.history.push({t:now,txt:'Statut : '+STATUS[old.status].l+' → '+STATUS[D.status].l});if(D.status==='levee'){data.liftedAt=now;data.liftedBy='moe'}if(D.status==='validee')data.validatedAt=now}}
+  data.updatedAt=now;const id=D.id||uid();
+  try{await API.set(P.doc('issues',id),data);closeModal();toast(isNew?'Réserve n°'+data.num+' créée':'Réserve enregistrée')}catch(e){handleErr(e)}}
+async function addPhotos(files){const D=S.draft;if(!D)return;const max=S.mode==='online'?15:4;
+  for(const f of files){if((D.photos||[]).length>=max){toast('Maximum '+max+' photos par réserve');break}busy('Ajout de la photo…');try{D.photos.push(await storeImage(f,'photo'))}catch(e){handleErr(e)}}
+  busy();if(S.draft===D)rerenderModal(renderIssueModal)}
+
+/* Annotation photo */
+function annotate(k){const D=S.draft;const ref=D.photos[k];const col={c:'#ff2d2d'};let strokes=[],cur=null,img=null;
+  openModal(`<div class="mh"><h2>Annoter la photo</h2><button class="x" data-act="annot-cancel">×</button></div><div class="mb annot"><div class="row" style="margin-bottom:10px"><div class="colors">${['#ff2d2d','#ffd43b','#ffffff','#1c7ed6'].map((c,i)=>`<button data-col="${c}" class="${i?'':'on'}" style="background:${c}"></button>`).join('')}</div><span class="sp"></span><button class="btn sm" id="an-undo">↶ Annuler le trait</button></div><canvas id="an-c"></canvas></div>
+  <div class="mf"><span class="sp"></span><button class="btn" data-act="annot-cancel">Annuler</button><button class="btn primary" id="an-save">Enregistrer</button></div>`,true);
+  S.draft=D;S.draftKind='issue';const cv=$('#an-c'),ctx=cv.getContext('2d');
+  const redraw=()=>{ctx.drawImage(img,0,0,cv.width,cv.height);for(const s of strokes){ctx.strokeStyle=s.c;ctx.lineWidth=cv.width/120;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();s.p.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));if(s.p.length===1)ctx.lineTo(s.p[0][0]+.1,s.p[0][1]);ctx.stroke()}};
+  loadImg(imgSrc(ref)).then(i=>{img=drawScaled(i,1600);cv.width=img.width;cv.height=img.height;redraw()}).catch(()=>toast('Image indisponible'));
+  const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  cv.addEventListener('pointerdown',e=>{if(!img)return;cv.setPointerCapture(e.pointerId);cur={c:col.c,p:[pos(e)]};strokes.push(cur);redraw()});
+  cv.addEventListener('pointermove',e=>{if(!cur)return;cur.p.push(pos(e));redraw()});const end=()=>{cur=null};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  $('.colors').onclick=e=>{const b=e.target.closest('[data-col]');if(!b)return;col.c=b.dataset.col;document.querySelectorAll('.colors button').forEach(x=>x.classList.toggle('on',x===b))};
+  $('#an-undo').onclick=()=>{strokes.pop();redraw()};
+  $('#an-save').onclick=async()=>{if(!img)return;if(!strokes.length){editIssue(D);return}busy('Enregistrement…');try{const b=await canvasBlob(cv,.85);D.photos[k]=await storeImage(b,'photo')}catch(e){handleErr(e)}busy();editIssue(D)}}
+
+/* Signature */
+function signVisit(vid){const v=S.visits.find(x=>x.id===vid);if(!v)return;let pts=[],cur=null;
+  openModal(`<div class="mh"><h2>Signature</h2><button class="x" data-act="close">×</button></div><div class="mb"><div class="g2"><label class="f">Nom du signataire<input class="inp" id="sg-n"></label><label class="f">Qualité<input class="inp" id="sg-r" list="sgr" placeholder="Maître d'ouvrage, entreprise…"></label></div>
+  <datalist id="sgr"><option value="Maître d'ouvrage"><option value="Maître d'œuvre">${comps().map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist>
+  <div class="row between small" style="margin-bottom:6px"><b>Signez dans le cadre</b><button class="btn sm" id="sg-clear">Effacer</button></div><canvas class="sigpad" id="sg-c"></canvas></div>
+  <div class="mf"><span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" id="sg-save">Enregistrer la signature</button></div>`);
+  const cv=$('#sg-c');const r0=cv.getBoundingClientRect();cv.width=r0.width*2;cv.height=r0.height*2;const ctx=cv.getContext('2d');ctx.lineWidth=4;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#14213d';
+  const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);cur=pos(e);pts.push(1);ctx.beginPath();ctx.moveTo(...cur)});
+  cv.addEventListener('pointermove',e=>{if(!cur)return;const p=pos(e);ctx.lineTo(...p);ctx.stroke();cur=p});const end=()=>{cur=null};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  $('#sg-clear').onclick=()=>{ctx.clearRect(0,0,cv.width,cv.height);pts=[]};
+  $('#sg-save').onclick=async()=>{const name=$('#sg-n').value.trim();if(!name)return toast('Indiquez le nom du signataire');if(!pts.length)return toast('La signature est vide');
+    const c=document.createElement('canvas');c.width=500;c.height=Math.round(500*cv.height/cv.width);c.getContext('2d').drawImage(cv,0,0,c.width,c.height);
+    const nv=JSON.parse(JSON.stringify(v));delete nv.id;nv.signatures=[...(nv.signatures||[]),{name,role:$('#sg-r').value.trim(),img:c.toDataURL('image/png'),t:Date.now()}];
+    try{await API.set(P.doc('visits',vid),nv);closeModal();toast('Signature enregistrée')}catch(e){handleErr(e)}}}
+
+/* Réunion */
+function editVisit(v,prefill){S.draftKind='visit';const nums=S.visits.map(x=>+x.num||0);
+  S.draft=Object.assign({type:'Réunion de chantier',date:today(),num:String(Math.max(0,...nums)+1),weather:'',att:{},others:'',notes:'',nextDate:'',keypoints:[],signatures:[]},prefill||{},v?JSON.parse(JSON.stringify(v)):{});const D=S.draft;D.att=D.att||{};
+  Object.keys(D.att).forEach(k=>{if(typeof D.att[k]==='string')D.att[k]={p:D.att[k]}});
+  openModal(`<div class="mh"><h2>${D.id?'Modifier la réunion':'Nouvelle réunion / visite'}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  <div class="g2"><label class="f">Type<select class="inp" data-f="type">${VISIT_TYPES.map(t=>`<option ${D.type===t?'selected':''}>${t}</option>`).join('')}</select></label>${field('N°','num',D.num,'text','inputmode="numeric"')}</div>
+  <div class="g2">${field('Date','date',D.date,'date')}${field('Météo','weather',D.weather,'text','placeholder="Ensoleillé, 12 °C"')}</div>
+  <div class="fld"><span>Présences, effectifs et avancement par lot</span>${S.companies.length?`<div class="att small muted" style="font-weight:600"><span>Entreprise</span><span>Présence</span><span>Effectif</span><span>Avanc. %</span></div>`+comps().map(c=>{const a=D.att[c.id]||{};return `<div class="att"><span><b>${esc(c.name)}</b> <span class="muted small">${esc(c.lot||'')}</span></span><select class="inp" data-att="${c.id}" data-k="p"><option value="">—</option>${Object.keys(PRESENCE).map(k=>`<option value="${k}" ${a.p===k?'selected':''}>${PRESENCE[k]}</option>`).join('')}</select><input class="inp" type="number" min="0" data-att="${c.id}" data-k="n" value="${esc(a.n||'')}" placeholder="pers."><input class="inp" type="number" min="0" max="100" data-att="${c.id}" data-k="av" value="${esc(a.av??'')}" placeholder="%"></div>`}).join(''):'<div class="small muted" style="font-weight:400">Ajoutez d\'abord des entreprises.</div>'}</div>
+  ${field('Autres participants','others',D.others,'text','placeholder="MOA, BET, bureau de contrôle, SPS…"')}
+  <label class="f">Observations générales ${mic('v-notes')}<textarea class="inp" rows="5" id="v-notes" data-f="notes" placeholder="Avancement général, points abordés…">${esc(D.notes)}</textarea></label>
+  ${field('Prochaine réunion','nextDate',D.nextDate,'date')}<p class="small muted" style="margin:0">Les points clés, actions et signatures se saisissent depuis la fiche de la réunion.</p></div>
+  <div class="mf">${D.id?'<button class="btn danger" data-act="del-visit">Supprimer</button>':''}<span class="sp"></span><button class="btn" data-act="close">Annuler</button>${D.id?'':'<button class="btn" data-act="save-visit" data-start="0">Enregistrer</button>'}<button class="btn primary" data-act="save-visit" data-start="${D.id?0:1}">${D.id?'Enregistrer':'Enregistrer et démarrer'}</button></div>`)}
+async function saveVisit(start){const D=S.draft;const id=D.id||uid();const data=JSON.parse(JSON.stringify(D));delete data.id;if(!D.id)data.createdAt=Date.now();
+  try{await API.set(P.doc('visits',id),data);closeModal();if(start)setActive(id);S.tab='visits';S.visitView=id;render()}catch(e){handleErr(e)}}
+function setActive(id){S.activeVisit=id||'';try{if(id)localStorage.setItem('cdc_av_'+S.pid,id);else localStorage.removeItem('cdc_av_'+S.pid)}catch(e){}render();if(id)toast('Réunion active : les nouvelles réserves y seront rattachées')}
+async function patchVisit(vid,fn){const v=S.visits.find(x=>x.id===vid);if(!v)return;const nv=JSON.parse(JSON.stringify(v));delete nv.id;fn(nv);try{await API.set(P.doc('visits',vid),nv)}catch(e){handleErr(e)}}
+
+/* Actions */
+function editAction(a,visitId){S.draftKind='action';S.draft=Object.assign({text:'',companyId:'',who:'',due:'',status:'ouverte',visitId:visitId||S.activeVisit||''},a?JSON.parse(JSON.stringify(a)):{});const D=S.draft;
+  openModal(`<div class="mh"><h2>${D.id?'Action':'Nouvelle action'}</h2><button class="x" data-act="close">×</button></div><div class="mb">
+  <label class="f">Action à mener * ${mic('a-text')}<textarea class="inp" rows="3" id="a-text" data-f="text">${esc(D.text)}</textarea></label>
+  <div class="g2"><label class="f">Entreprise responsable<select class="inp" data-f="companyId"><option value="">— Autre (préciser) —</option>${comps().map(c=>`<option value="${c.id}" ${D.companyId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></label>${field('Ou responsable (autre)','who',D.who,'text','placeholder="MOA, BET, architecte…"')}</div>
+  <div class="g2">${field('Pour le','due',D.due,'date')}<label class="f">État<select class="inp" data-f="status"><option value="ouverte" ${D.status!=='faite'?'selected':''}>À faire</option><option value="faite" ${D.status==='faite'?'selected':''}>Faite</option></select></label></div></div>
+  <div class="mf">${D.id?'<button class="btn danger" data-act="act-del">Supprimer</button>':''}<span class="sp"></span><button class="btn" data-act="close">Annuler</button><button class="btn primary" data-act="act-save">Enregistrer</button></div>`)}
+async function saveAction(D){if(!D.text||!D.text.trim())return toast("Décrivez l'action");const id=D.id||uid();const data=JSON.parse(JSON.stringify(D));delete data.id;if(!D.id)data.createdAt=Date.now();
+  if(data.status==='faite'&&!data.doneAt)data.doneAt=Date.now();if(data.status!=='faite'){delete data.doneAt;delete data.doneBy}
+  try{await API.set(P.doc('actions',id),data);return true}catch(e){handleErr(e);return false}}
+
+/* ====================== Rapports ====================== */
+const slug=s=>String(s||'projet').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w]+/g,'_').replace(/^_|_$/g,'').slice(0,40);
+function reportIssues(){const R=S.rep;return S.issues.filter(i=>R.st[i.status]&&(!R.companyId||i.companyId===R.companyId)).sort((a,b)=>lotSort(comp(a.companyId)||{},comp(b.companyId)||{})||a.num-b.num)}
+async function planWithPins(pl,issues){const img=await loadImg(imgSrc(pl.img));const c=drawScaled(img,2200);const x=c.getContext('2d');const r=Math.max(10,c.width*.011);
+  x.font=`bold ${Math.round(r*1.05)}px Helvetica,Arial,sans-serif`;x.textAlign='center';x.textBaseline='middle';
+  for(const i of issues){if(i.x==null)continue;const px=i.x*c.width,py=i.y*c.height;x.beginPath();x.arc(px,py,r,0,7);x.fillStyle=STATUS[i.status].c;x.fill();x.lineWidth=r*.22;x.strokeStyle='#fff';x.stroke();x.fillStyle='#fff';x.fillText(String(i.num),px,py+1)}
+  return{d:c.toDataURL('image/jpeg',.82),w:c.width,h:c.height}}
+const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+async function generatePDF(visitId){
+  const R=S.rep;const visit=visitId?S.visits.find(v=>v.id===visitId):(R.type==='pv'?S.visits.find(v=>v.id===R.visitId):null);
+  if(R.type==='pv'&&!visitId&&!visit)return toast('Choisissez une réunion');
+  busy('Préparation du PDF…');
+  try{await loadScript(JSPDF);const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const proj=curProj();const M=15,CW=180,BOT=280;let y=M;
+  const title=visit?`PV ${visit.num?'n°'+visit.num+' – ':''}${visit.type}`:'Rapport des réserves';const issues=reportIssues();
+  const head=()=>{doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(120);doc.text(String(proj.name||''),M,10);doc.text(title,210-M,10,{align:'right'});doc.setDrawColor(225);doc.line(M,12,210-M,12);doc.setTextColor(30);y=19};
+  const newPage=()=>{doc.addPage();head()};const ensure=h=>{if(y+h>BOT)newPage()};
+  const T=(s,o={})=>{const sz=o.size||10;doc.setFont('helvetica',o.bold?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...(o.color||[30,30,30]));const lh=sz*.3528*1.35;const x=o.x||M;
+    for(const ln of doc.splitTextToSize(String(s??''),o.w||CW)){ensure(lh);y+=lh;doc.text(ln,x,y-lh*.28)}doc.setTextColor(30)};
+  const H=s=>{ensure(16);y+=4;doc.setFillColor(...hex('#d9480f'));doc.rect(M,y+1.2,2,6,'F');T(s,{size:13,bold:true,x:M+5});y+=2};
+  const table=(cols,rows)=>{const rh=7;const drawHead=()=>{doc.setFillColor(242,240,234);doc.rect(M,y,CW,rh,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);let x=M;cols.forEach(c=>{doc.text(c.h,c.a==='c'?x+c.w/2:x+2,y+4.7,{align:c.a==='c'?'center':'left'});x+=c.w});y+=rh};
+    ensure(rh*2);drawHead();doc.setFont('helvetica','normal');doc.setFontSize(9);
+    rows.forEach((r,ri)=>{if(y+rh>BOT){newPage();drawHead();doc.setFont('helvetica','normal');doc.setFontSize(9)}if(ri%2){doc.setFillColor(250,249,246);doc.rect(M,y,CW,rh,'F')}let x=M;
+      cols.forEach((c,ci)=>{const t=doc.splitTextToSize(String(r[ci]??''),c.w-3)[0]||'';if(r.colors&&r.colors[ci])doc.setTextColor(...hex(r.colors[ci]));doc.text(t,c.a==='c'?x+c.w/2:x+2,y+4.7,{align:c.a==='c'?'center':'left'});doc.setTextColor(30);x+=c.w});y+=rh});y+=3};
+  head();y=24;if(CFG.companyName){T(CFG.companyName,{size:9,bold:true,color:[120,120,120]});y+=1}
+  T(title,{size:20,bold:true});y+=1;T(proj.name,{size:14,bold:true,color:[217,72,15]});if(proj.address)T(proj.address,{size:10,color:[100,100,100]});y+=4;
+  const info=[["Maître d'ouvrage",proj.moa],["Maître d'œuvre",proj.moe],['Référence',proj.ref]];
+  if(visit){info.push(['Date',fmtDate(visit.date)]);if(visit.weather)info.push(['Météo',visit.weather]);if(visit.nextDate)info.push(['Prochaine réunion',fmtDate(visit.nextDate)])}
+  info.push(['Document édité le',new Date().toLocaleDateString('fr-FR')]);if(R.companyId)info.push(['Entreprise',compLabel(R.companyId)]);
+  info.filter(r=>r[1]).forEach(r=>{ensure(6);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(110);doc.text(r[0],M,y+4);doc.setFont('helvetica','normal');doc.setTextColor(30);doc.text(doc.splitTextToSize(String(r[1]),CW-50)[0],M+50,y+4);y+=6});
+  if(visit&&visit.nextDate){y+=2;ensure(10);doc.setFillColor(255,240,230);doc.rect(M,y,CW,9,'F');doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(138,47,6);doc.text('Prochaine réunion : '+new Date(visit.nextDate+'T12:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),M+3,y+6);doc.setTextColor(30);y+=11}
+  if(visit){
+    const kps=(visit.keypoints||[]);if(kps.length){H('Points clés à retenir');const order=Object.keys(KP);
+      [...kps].sort((a,b)=>order.indexOf(a.type)-order.indexOf(b.type)).forEach(k=>{const t=KP[k.type]||KP.info;doc.setFontSize(10);const lines=doc.splitTextToSize(k.text,CW-36);const h=Math.max(8,lines.length*4.8+3.5);ensure(h+2);
+        doc.setFillColor(...hex(t.c));doc.rect(M,y,1.4,h,'F');doc.setFillColor(...hex(t.bg));doc.rect(M+1.4,y,CW-1.4,h,'F');doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(...hex(t.c));doc.text(t.l.toUpperCase(),M+4,y+5.2);
+        doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(30);lines.forEach((ln,li)=>doc.text(ln,M+34,y+5.3+li*4.8));y+=h+2})}
+    const att=comps().filter(c=>attOf(visit,c.id).p);if(att.length){H('Présences, effectifs et avancement');table([{h:'Lot',w:50},{h:'Entreprise',w:62},{h:'Présence',w:28},{h:'Effectif',w:20,a:'c'},{h:'Avanc.',w:20,a:'c'}],att.map(c=>{const a=attOf(visit,c.id);return[c.lot,c.name,PRESENCE[a.p]||'',a.n||'',a.av!==undefined&&a.av!==''?a.av+' %':'']}))}
+    if(visit.others){T('Autres participants : '+visit.others,{size:9.5});y+=2}
+    if(visit.notes){H('Observations générales');T(visit.notes,{size:10});y+=2}
+    const acts=S.actions.filter(a=>(a.status!=='faite'||a.visitId===visit.id)&&(!R.companyId||a.companyId===R.companyId)).sort((a,b)=>(a.status==='faite')-(b.status==='faite')||(a.due||'9').localeCompare(b.due||'9'));
+    if(acts.length){H('Suivi des actions');const rows=acts.map(a=>{const r=[a.text,actWho(a),a.due?fmtDate(a.due):'',a.status==='faite'?'Faite':(actLate(a)?'En retard':'À faire')];r.colors=[null,null,null,a.status==='faite'?'#2f9e44':(actLate(a)?'#c92a2a':'#e67700')];return r});
+      const rh=7;const cols=[{h:'Action',w:98},{h:'Responsable',w:40},{h:'Pour le',w:22},{h:'État',w:20}];
+      ensure(rh*2);doc.setFillColor(242,240,234);doc.rect(M,y,CW,rh,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);let x=M;cols.forEach(c=>{doc.text(c.h,x+2,y+4.7);x+=c.w});y+=rh;
+      rows.forEach(r=>{doc.setFont('helvetica','normal');doc.setFontSize(9);const lines=doc.splitTextToSize(r[0],cols[0].w-3);const h=Math.max(rh,lines.length*4.2+2.8);if(y+h>BOT)newPage();
+        doc.text(lines,M+2,y+4.7);let x=M+cols[0].w;for(let ci=1;ci<4;ci++){if(r.colors[ci])doc.setTextColor(...hex(r.colors[ci]));if(ci===3)doc.setFont('helvetica','bold');doc.text(doc.splitTextToSize(String(r[ci]),cols[ci].w-3)[0]||'',x+2,y+4.7);doc.setTextColor(30);x+=cols[ci].w}
+        doc.setDrawColor(235);doc.line(M,y+h,M+CW,y+h);y+=h});y+=3}}
+  H('Récapitulatif des réserves');
+  const groups=[];comps().forEach(c=>{const l=issues.filter(i=>i.companyId===c.id);if(l.length)groups.push({c,l})});const un=issues.filter(i=>!comp(i.companyId));if(un.length)groups.push({c:{name:'Non affectée',lot:''},l:un});
+  if(!issues.length)T('Aucune réserve pour les critères sélectionnés.',{color:[110,110,110]});
+  else{const st=Object.keys(STATUS);const rows=groups.map(g=>{const k=counts(g.l);const r=[g.c.lot,g.c.name,...st.map(s=>k[s]),k.total];r.colors=[null,null,...st.map(s=>k[s]?STATUS[s].c:'#bbbbbb'),null];return r});
+    const tot=counts(issues);rows.push(['','TOTAL',...st.map(s=>tot[s]),tot.total]);table([{h:'Lot',w:46},{h:'Entreprise',w:54},...st.map(s=>({h:STATUS[s].l,w:16,a:'c'})),{h:'Total',w:16,a:'c'}],rows)}
+  if(R.plans){for(const pl of S.plans){const l=issues.filter(i=>i.planId===pl.id&&i.x!=null);if(!l.length)continue;busy('Plan : '+pl.name+'…');
+    try{const im=await planWithPins(pl,l);newPage();T('Plan : '+pl.name,{size:13,bold:true});y+=2;let w=CW,h=w*im.h/im.w;const maxH=BOT-y-2;if(h>maxH){h=maxH;w=h*im.w/im.h}doc.addImage(im.d,'JPEG',M+(CW-w)/2,y,w,h);y+=h+4}catch(e){console.warn(e)}}}
+  if(issues.length){newPage();T('Détail des réserves',{size:15,bold:true});y+=2;
+    for(const g of groups){ensure(20);y+=3;doc.setFillColor(29,29,27);doc.rect(M,y,CW,8,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(((g.c.lot?g.c.lot+' – ':'')+g.c.name).slice(0,90),M+3,y+5.4);doc.setTextColor(30);y+=11;
+      for(const i of g.l){busy('Réserve n°'+i.num+'…');const photos=[];if(R.photos)for(const p of (i.photos||[]).slice(-4)){try{photos.push(await srcToData(imgSrc(p),900))}catch(e){}}
+        const descLines=i.desc?doc.splitTextToSize(i.desc,CW-10).length:0;ensure(16+Math.min(descLines,6)*4.6+(photos.length?40:0));
+        doc.setFillColor(...hex(STATUS[i.status].c));doc.circle(M+4,y+4,4,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(i.num>99?7:8.5);doc.text(String(i.num),M+4,y+5.2,{align:'center'});doc.setTextColor(30);
+        const y0=y;T(i.title,{size:11,bold:true,x:M+10,w:CW-10});if(y<y0+8)y=y0+8;
+        const meta=[STATUS[i.status].l,i.prio&&i.prio!=='normale'?'Priorité '+PRIO[i.prio].toLowerCase():'',i.due?'Échéance '+fmtDate(i.due)+(isLate(i)?' (en retard)':''):'',i.loc,i.planId?'Plan '+planName(i.planId):'',i.liftedAt&&(i.status==='levee'||i.status==='validee')?'Levée le '+fmtDate(i.liftedAt):''].filter(Boolean).join('  ·  ');
+        T(meta,{size:8.5,x:M+10,w:CW-10,color:[100,100,100]});if(i.desc)T(i.desc,{size:9.5,x:M+10,w:CW-10});
+        const cm=(i.history||[]).filter(h=>!/^Statut|^Réserve créée/.test(h.txt)).slice(-3);if(cm.length)T('Suivi : '+cm.map(h=>fmtDate(h.t)+' – '+h.txt).join(' | '),{size:8.5,x:M+10,w:CW-10,color:[90,90,90]});
+        if(photos.length){y+=2;const bw=(CW-10-9)/4,bh=34;ensure(bh+2);photos.forEach((p,k)=>{let w=bw,h=bw*p.h/p.w;if(h>bh){h=bh;w=bh*p.w/p.h}doc.addImage(p.d,'JPEG',M+10+k*(bw+3),y,w,h)});y+=bh+1}
+        y+=3;doc.setDrawColor(230);doc.line(M+10,y,210-M,y);y+=3}}}
+  if(visit&&(visit.signatures||[]).length){H('Signatures');const sw=(CW-10)/3;let col=0;ensure(40);const top=()=>y;let rowY=top();
+    visit.signatures.forEach(s=>{if(col===3){col=0;y=rowY+38;ensure(40);rowY=y}const x=M+col*(sw+5);doc.setDrawColor(220);doc.rect(x,rowY,sw,34);try{doc.addImage(s.img,'PNG',x+3,rowY+2,sw-6,18)}catch(e){}
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(doc.splitTextToSize(s.name,sw-4)[0],x+2,rowY+25);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(110);doc.text(doc.splitTextToSize((s.role?s.role+' – ':'')+fmtDT(s.t),sw-4)[0],x+2,rowY+30);doc.setTextColor(30);col++});y=rowY+38}
+  const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(140);doc.text(`Page ${k} / ${n}`,105,290,{align:'center'})}
+  saveFile(`${slug(proj.name)}_${visit?'PV'+(visit.num||'')+'_'+(visit.date||''):'reserves_'+today()}.pdf`,doc.output('blob'));toast('PDF téléchargé');
+  }catch(e){console.error(e);toast('Erreur PDF : '+((e&&e.message)||e))}busy()}
+function csvText(){const rows=[['N°','Intitulé','Description','Lot','Entreprise','Localisation','Plan','Statut','Priorité','Échéance','Réunion','Créée le','Levée le','Photos']];
+  reportIssues().forEach(i=>{const c=comp(i.companyId)||{};const v=S.visits.find(x=>x.id===i.visitId);rows.push([i.num,i.title,i.desc,c.lot||'',c.name||'',i.loc,planName(i.planId),STATUS[i.status].l,PRIO[i.prio]||'',fmtDate(i.due),v?visitLabel(v):'',fmtDate(i.createdAt),fmtDate(i.liftedAt),(i.photos||[]).length])});
+  return '﻿'+rows.map(r=>r.map(v=>{v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(';')).join('\r\n')}
+function summaryText(){const p=curProj();const l=reportIssues();let t=`${p.name} – État des réserves au ${new Date().toLocaleDateString('fr-FR')}\n`;const g={};l.forEach(i=>{(g[i.companyId||'']=g[i.companyId||'']||[]).push(i)});
+  Object.keys(g).sort((a,b)=>lotSort(comp(a)||{},comp(b)||{})).forEach(k=>{t+=`\n${compLabel(k)} (${g[k].length})\n`;g[k].forEach(i=>{t+=`  • n°${i.num} – ${i.title}${i.loc?' – '+i.loc:''} [${STATUS[i.status].l}${i.due?', échéance '+fmtDate(i.due):''}]\n`})});return t}
+
+/* ====================== Portail entreprise ====================== */
+const PT={active:false,token:'',data:null,open:null,photos:[]};
+async function initPortal(t){PT.active=true;PT.token=t;
+  if(!HAS_SB){$('#app').innerHTML=`<div class="empty" style="padding-top:25vh">Ce lien n'est pas encore actif.</div>`;return}
+  try{await loadScript(SB_LIB)}catch(e){$('#app').innerHTML=`<div class="empty" style="padding-top:25vh">Connexion impossible. Vérifiez votre accès internet.</div>`;return}
+  Supa.sb=supabase.createClient(CFG.supabaseUrl,CFG.supabaseKey,{auth:{persistSession:false}});await portalLoad()}
+async function portalLoad(){const {data,error}=await Supa.sb.rpc('portal_get',{p_token:PT.token});
+  if(error||!data||!data.company){$('#app').innerHTML=`<header class="top"><div class="brand">${LOGO}<span>${esc(APP_NAME)}</span></div></header><div class="wrap" style="max-width:520px"><div class="card empty"><div class="big">🔒</div><h2 style="color:var(--ink)">Lien invalide ou désactivé</h2><p>Ce lien n'est plus valable. Recevez votre lien à jour par e-mail :</p><div style="text-align:left">${lostLinkForm()}</div></div></div>`;bindLostLink();return}
+  PT.data=data;const p=data.project||{name:'Projet'};S.pid=p.id;S.projects=[p];S.companies=[data.company];S.issues=data.issues||[];S.plans=data.plans||[];S.actions=data.actions||[];S.visits=[];render();
+  if(PT.open){const i=S.issues.find(x=>x.id===PT.open);if(i)portalIssue(i.id)}}
+function renderPortal(){if(!PT.data)return;const p=curProj(),c=PT.data.company;const c0=counts(S.issues);
+  const grp=[['À traiter',S.issues.filter(i=>i.status==='afaire'||i.status==='encours')],['Levées – en attente de validation',S.issues.filter(i=>i.status==='levee')],['Validées',S.issues.filter(i=>i.status==='validee')]];
+  const acts=S.actions.filter(a=>a.status!=='faite');
+  $('#app').innerHTML=`<header class="top"><div class="brand">${LOGO}<span class="title">${esc(p.name)}</span></div></header>
+  <main class="wrap"><div style="margin-bottom:14px"><div class="muted small">Espace entreprise</div><h1>${esc(c.name)}</h1><div class="muted small">${esc(c.lot||'')}${p.address?' · '+esc(p.address):''}</div></div>
+  <div class="grid stats"><div class="card stat"><div class="n" style="color:${STATUS.afaire.c}">${c0.afaire+c0.encours}</div><div class="l">À traiter</div></div><div class="card stat"><div class="n" style="color:${STATUS.levee.c}">${c0.levee}</div><div class="l">En attente de validation</div></div><div class="card stat"><div class="n" style="color:${STATUS.validee.c}">${c0.validee}</div><div class="l">Validées</div></div><div class="card stat"><div class="n" style="color:#c92a2a">${c0.late}</div><div class="l">En retard</div></div></div>
+  <div class="row" style="margin-top:12px"><button class="btn" data-act="pt-pdf">📄 Télécharger mes réserves (PDF)</button><button class="btn" data-act="pt-reload">↻ Actualiser</button></div>
+  ${acts.length?`<div class="section-t"><h2>Actions demandées</h2></div><div class="card">${acts.map(a=>`<div class="act"><div class="body"><div class="tx">${esc(a.text)}</div><div class="small ${actLate(a)?'late':'muted'}">${a.due?'Pour le '+fmtDate(a.due)+(actLate(a)?' (retard)':''):''}</div></div><button class="btn sm green" data-act="pt-actdone" data-id="${a.id}">C'est fait</button></div>`).join('')}</div>`:''}
+  ${grp.map(([t,l])=>l.length?`<div class="section-t"><h2>${t} (${l.length})</h2></div><div class="grid">${l.sort((a,b)=>a.num-b.num).map(i=>issueCard(i).replace('data-act="open-issue"','data-act="pt-open"')).join('')}</div>`:'').join('')}
+  ${S.issues.length?'':`<div class="card empty" style="margin-top:14px"><div class="big">✅</div>Aucune réserve vous concernant sur ce chantier.</div>`}
+  <p class="small muted" style="margin-top:24px;text-align:center">Ce lien est personnel : merci de ne pas le diffuser.</p></main>`}
+function portalIssue(id){const i=S.issues.find(x=>x.id===id);if(!i)return;PT.open=id;PT.photos=[];const pl=S.plans.find(p=>p.id===i.planId);
+  const draw=()=>openModal(`<div class="mh"><h2>Réserve n°${i.num}</h2><button class="x" data-act="pt-close">×</button></div><div class="mb">
+  <h3>${esc(i.title)}</h3><div class="small" style="margin:6px 0 10px"><span class="chip" style="background:${STATUS[i.status].c}">${STATUS[i.status].l}</span> ${i.due?`<span class="${isLate(i)?'late':'muted'}">Échéance ${fmtDate(i.due)}</span>`:''}</div>
+  ${i.loc?`<div class="small"><b>Localisation :</b> ${esc(i.loc)}</div>`:''}${i.desc?`<p style="white-space:pre-wrap">${esc(i.desc)}</p>`:''}
+  ${pl&&i.x!=null?`<div class="mini" data-act="zoom-img" data-src="${esc(imgSrc(pl.img))}"><img src="${esc(imgSrc(pl.img))}"><span class="pin" style="left:${i.x*100}%;top:${i.y*100}%;background:${STATUS[i.status].c}">${i.num}</span></div><div class="small muted">${esc(pl.name)}</div>`:''}
+  ${(i.photos||[]).length?`<div class="fld" style="margin-top:12px"><span>Photos</span><div class="photos">${i.photos.map(p=>`<div class="ph" style="background-image:url('${esc(imgSrc(p))}')" data-act="zoom-img" data-src="${esc(imgSrc(p))}"></div>`).join('')}</div></div>`:''}
+  ${(i.history||[]).length?`<div class="fld"><span>Suivi</span><div class="hist">${i.history.map(h=>`<div>${esc(h.txt)} <small>— ${fmtDT(h.t)}</small></div>`).join('')}</div></div>`:''}
+  ${i.status==='validee'?'':`<div class="card" style="background:#faf9f6;margin-top:10px"><label class="f">Votre commentaire ${mic('pt-c')}<textarea class="inp" id="pt-c" rows="3" placeholder="Date d'intervention, travaux réalisés…"></textarea></label>
+   <div class="fld"><span>Photos (après travaux)</span><div class="photos">${PT.photos.map((p,k)=>`<div class="ph" style="background-image:url('${esc(p.d)}')"><button class="rm" data-act="pt-rmph" data-k="${k}">✕</button></div>`).join('')}${PT.photos.length<4?`<label class="addph">📷<br>Ajouter<input type="file" accept="image/*" multiple data-file="ptphoto"></label>`:''}</div></div>
+   <div class="row"><button class="btn" data-act="pt-send" data-s="">Envoyer le commentaire</button>${i.status==='afaire'?`<button class="btn" data-act="pt-send" data-s="encours">Je prends en charge</button>`:''}${i.status==='afaire'||i.status==='encours'?`<button class="btn green" data-act="pt-send" data-s="levee">✔ Déclarer levée</button>`:''}</div></div>`}
+  </div>`);PT.redraw=()=>{const c=$('#pt-c');const v=c?c.value:'';draw();const n=$('#pt-c');if(n)n.value=v};draw()}
+async function portalSend(st){const i=S.issues.find(x=>x.id===PT.open);if(!i)return;const c=($('#pt-c')||{}).value||'';
+  if(!st&&!c.trim()&&!PT.photos.length)return toast('Ajoutez un commentaire ou une photo');
+  if(st==='levee'&&!PT.photos.length&&!await ask('Déclarer la réserve levée sans photo ? Une photo facilite la validation.','Déclarer levée'))return;
+  busy('Envoi…');const {data,error}=await Supa.sb.rpc('portal_update_issue',{p_token:PT.token,p_issue:i.id,p_comment:c,p_photos:PT.photos,p_status:st||null});busy();
+  if(error||!data)return toast('Envoi impossible : '+((error&&error.message)||'lien invalide'));PT.photos=[];toast(st==='levee'?'Levée déclarée, merci !':'Envoyé');$('#modal-root').innerHTML='';PT.open=null;await portalLoad()}
+
+/* ====================== Événements ====================== */
+const ACT={
+  'logout':async()=>{await Supa.sb.auth.signOut();location.reload()},
+  'home':()=>closeProject(),'open-proj':el=>openProject(el.dataset.id),'new-proj':()=>editProject(),'edit-proj':()=>editProject(curProj()),'save-proj':saveProject,'del-proj':deleteProject,
+  'close':()=>closeModal(),'zoom-img':(el,e)=>{if(e.target.closest('button'))return;lightbox(el.dataset.src)},'mic':el=>toggleMic(el),
+  'tab':el=>{S.tab=el.dataset.t;S.adding=false;if(el.dataset.t!=='plans'&&!S.placing)S.planView=null;if(el.dataset.t!=='visits')S.visitView=null;render();scrollTo(0,0)},
+  'goto-st':el=>{S.f={q:'',status:el.dataset.s,company:'',plan:''};S.tab='issues';render();scrollTo(0,0)},
+  'goto-co':el=>{S.f={q:'',status:'',company:el.dataset.id,plan:''};S.tab='issues';render();scrollTo(0,0)},
+  'clear-f':()=>{S.f={q:'',status:'',company:'',plan:''};render()},
+  'new-co':()=>editCompany(),'edit-co':el=>editCompany(comp(el.dataset.id)),'save-co':saveCompany,'del-co':deleteCompany,
+  'co-link':el=>openCoLink(el.dataset.id),'relance':el=>openRelance(el.dataset.id),'rl-copy':()=>copyText($('#rl-t').value),
+  'lk-copy':el=>copyText(linkUrl(el.dataset.t)),'account':()=>openAccount(),
+  'lk-send':async el=>{const c=comp(el.dataset.id)||{};const t=el.dataset.t;busy('Envoi…');let err=null;
+    try{const r=await Supa.sb.functions.invoke('envoi-lien',{body:{token:t}});err=r.error}catch(x){err=x}busy();
+    if(!err)return toast('Lien envoyé à '+c.email);
+    if(await ask("L'envoi automatique n'est pas configuré ou a échoué. Ouvrir votre messagerie avec un e-mail prérempli ?",'Ouvrir ma messagerie'))
+      location.href=mailto(c.email,'Accès à vos réserves – '+curProj().name,`Bonjour,\n\nVoici votre lien personnel pour consulter et lever vos réserves sur le chantier « ${curProj().name} » :\n${linkUrl(t)}\n\nAucun compte n'est nécessaire.\n\nCordialement`)},
+  'lk-create':async el=>{busy('Création du lien…');try{const t=await API.saveLink(S.pid,el.dataset.id);S.links[el.dataset.id]=t;busy();openCoLink(el.dataset.id);render()}catch(e){busy();handleErr(e)}},
+  'lk-revoke':async el=>{if(!await ask("Désactiver ce lien ? L'entreprise n'aura plus accès. Vous pourrez en créer un nouveau.",'Désactiver'))return;try{await API.revokeLink(S.links[el.dataset.id]);delete S.links[el.dataset.id];closeModal();render();toast('Lien désactivé')}catch(e){handleErr(e)}},
+  'open-plan':el=>{S.planView=el.dataset.id;S.zoom=1;render();scrollTo(0,0)},'close-plan':()=>{S.planView=null;S.adding=false;render()},
+  'edit-plan':el=>editPlan(S.plans.find(p=>p.id===el.dataset.id)),
+  'save-plan':async()=>{const {id,...d}=S.draft;try{await API.set(P.doc('plans',id),d);closeModal()}catch(e){handleErr(e)}},
+  'del-plan':async()=>{const D=S.draft;const n=S.issues.filter(i=>i.planId===D.id).length;if(!await ask(`Supprimer le plan « ${D.name} » ?${n?` Les ${n} réserve(s) placées dessus seront conservées sans emplacement.`:''}`,'Supprimer'))return;try{await API.del(P.doc('plans',D.id));closeModal();S.planView=null;render()}catch(e){handleErr(e)}},
+  'zoom':el=>{const ps=$('.plan-scroll');const old=S.zoom;S.zoom=Math.max(1,Math.min(6,+(S.zoom*(el.dataset.z==='1'?1.5:1/1.5)).toFixed(2)));if(S.zoom<1.05)S.zoom=1;
+    const cx=ps?ps.scrollLeft+ps.clientWidth/2:0,cy=ps?ps.scrollTop+ps.clientHeight/2:0;render();const n=$('.plan-scroll');if(n&&ps){const k=S.zoom/old;n.scrollLeft=cx*k-n.clientWidth/2;n.scrollTop=cy*k-n.clientHeight/2}},
+  'toggle-add':()=>{S.adding=!S.adding;render()},
+  'plan-tap':(el,e)=>{if(!(S.adding||S.placing))return;const img=el.querySelector('img');const r=img.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;if(x<0||x>1||y<0||y>1)return;
+    if(S.placing&&S.draft){const D=S.draft;D.planId=el.dataset.id;D.x=+x.toFixed(4);D.y=+y.toFixed(4);S.placing=false;render();editIssue(D)}else editIssue(newIssue({planId:el.dataset.id,x:+x.toFixed(4),y:+y.toFixed(4)}))},
+  'cancel-place':()=>{const D=S.draft;S.placing=false;render();if(D)editIssue(D)},
+  'new-issue':()=>editIssue(newIssue(S.planView?{planId:S.planView}:{})),
+  'open-issue':el=>{const i=S.issues.find(x=>x.id===el.dataset.id);if(i)editIssue(JSON.parse(JSON.stringify(Object.assign({photos:[],history:[]},i))))},
+  'd-status':el=>{S.draft.status=el.dataset.s;rerenderModal(renderIssueModal)},
+  'd-validate':async()=>{const D=S.draft;D.status='validee';await saveIssue()},
+  'd-refuse':async()=>{const m=await ask('Motif du refus (visible par l\'entreprise) :','Refuser la levée','Ex. : joint silicone toujours absent côté baignoire');if(m===false)return;const D=S.draft;D.status='afaire';D.history=D.history||[];D.history.push({t:Date.now(),txt:'Levée refusée'+(m?' : '+m:'')});await saveIssue()},
+  'd-place':()=>{const D=S.draft;S.placing=true;$('#modal-root').innerHTML='';S.tab='plans';S.planView=D.planId||(S.plans.length===1?S.plans[0].id:null);S.zoom=1;render();scrollTo(0,0)},
+  'd-rmph':el=>{S.draft.photos.splice(+el.dataset.k,1);rerenderModal(renderIssueModal)},
+  'd-annot':el=>annotate(+el.dataset.k),'annot-cancel':()=>editIssue(S.draft),
+  'd-cmt':()=>{const v=$('#cmt').value.trim();if(!v)return;S.draft.history=S.draft.history||[];S.draft.history.push({t:Date.now(),txt:v});rerenderModal(renderIssueModal)},
+  'd-save':saveIssue,
+  'd-del':async()=>{const D=S.draft;if(!await ask(`Supprimer la réserve n°${D.num} ?`,'Supprimer'))return;try{await API.del(P.doc('issues',D.id));closeModal()}catch(e){handleErr(e)}},
+  'new-visit':()=>editVisit(),'edit-visit':el=>editVisit(S.visits.find(v=>v.id===el.dataset.id)),
+  'next-visit':el=>{const v=S.visits.find(x=>x.id===el.dataset.id);const att={};Object.keys(v.att||{}).forEach(k=>{const a=attOf(v,k);if(a.p)att[k]={p:'convoque',av:a.av}});
+    editVisit(null,{type:v.type,date:v.nextDate||today(),num:String((+v.num||0)+1),att,others:v.others||''})},
+  'save-visit':el=>saveVisit(el.dataset.start==='1'),
+  'del-visit':async()=>{const D=S.draft;if(!await ask('Supprimer cette réunion ? Les réserves et actions rattachées sont conservées.','Supprimer'))return;try{await API.del(P.doc('visits',D.id));if(S.activeVisit===D.id)setActive('');closeModal();S.visitView=null;render()}catch(e){handleErr(e)}},
+  'open-visit':el=>{S.tab='visits';S.visitView=el.dataset.id;render();scrollTo(0,0)},'close-visit':()=>{S.visitView=null;render()},
+  'start-visit':el=>setActive(el.dataset.id),'stop-visit':()=>{setActive('');toast('Réunion terminée')},
+  'pv-visit':el=>{S.rep.type='pv';S.rep.visitId=el.dataset.id;generatePDF(el.dataset.id)},
+  'kp-add':()=>{const t=$('#kp-text').value.trim();if(!t)return toast('Saisissez le point à retenir');const type=$('#kp-type').value;patchVisit(S.visitView,v=>{v.keypoints=[...(v.keypoints||[]),{type,text:t,t:Date.now()}]})},
+  'kp-del':async el=>{if(!await ask('Supprimer ce point clé ?','Supprimer'))return;patchVisit(S.visitView,v=>{v.keypoints.splice(+el.dataset.k,1)})},
+  'sign':el=>signVisit(el.dataset.id),
+  'sig-del':async el=>{if(!await ask('Supprimer cette signature ?','Supprimer'))return;patchVisit(S.visitView,v=>{v.signatures.splice(+el.dataset.k,1)})},
+  'act-new':()=>editAction(null),'act-edit':el=>editAction(S.actions.find(a=>a.id===el.dataset.id)),
+  'act-save':async()=>{if(await saveAction(S.draft))closeModal()},
+  'act-del':async()=>{const D=S.draft;if(!await ask('Supprimer cette action ?','Supprimer'))return;try{await API.del(P.doc('actions',D.id));closeModal()}catch(e){handleErr(e)}},
+  'act-toggle':el=>{const a=S.actions.find(x=>x.id===el.dataset.id);if(!a)return;const d=JSON.parse(JSON.stringify(a));d.status=a.status==='faite'?'ouverte':'faite';d.doneBy=d.status==='faite'?'moe':undefined;if(d.status==='faite')d.doneAt=Date.now();saveAction(d)},
+  'act-quick':async el=>{const t=$('#af-text').value.trim();if(!t)return toast("Décrivez l'action");const co=$('#af-co').value;
+    const d={text:t,companyId:co.startsWith('__')?'':co,who:co==='__moe'?"Maîtrise d'œuvre":co==='__moa'?"Maître d'ouvrage":'',due:$('#af-due').value,status:'ouverte',visitId:el.dataset.visit};if(await saveAction(d))toast('Action ajoutée')},
+  'gen-pdf':()=>generatePDF(),'export-csv':()=>{saveFile(slug(curProj().name)+'_reserves_'+today()+'.csv',new Blob([csvText()],{type:'text/csv;charset=utf-8'}));toast('Fichier téléchargé')},
+  'copy-sum':()=>copyText(summaryText()),
+  /* portail */
+  'pt-open':el=>portalIssue(el.dataset.id),'pt-close':()=>{$('#modal-root').innerHTML='';PT.open=null;PT.photos=[]},
+  'pt-reload':()=>portalLoad(),'pt-send':el=>portalSend(el.dataset.s),
+  'pt-rmph':el=>{PT.photos.splice(+el.dataset.k,1);PT.redraw()},
+  'pt-actdone':async el=>{if(!await ask('Confirmer que cette action est réalisée ?','Confirmer'))return;busy('Envoi…');const {data,error}=await Supa.sb.rpc('portal_action_done',{p_token:PT.token,p_action:el.dataset.id});busy();if(error||!data)return toast('Envoi impossible');toast('Merci !');portalLoad()},
+  'pt-pdf':()=>{S.rep={type:'reserves',visitId:'',companyId:PT.data.company.id,st:{afaire:true,encours:true,levee:true,validee:true},plans:true,photos:true};generatePDF()},
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=ACT[el.dataset.act];if(f){if(el.tagName==='BUTTON'||el.tagName==='A'&&el.getAttribute('href')==='#')e.preventDefault();f(el,e)}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.f&&S.draft){S.draft[t.dataset.f]=t.value;return}
+  if(t.dataset.att&&S.draft){const a=S.draft.att[t.dataset.att]=S.draft.att[t.dataset.att]||{};a[t.dataset.k]=t.value;return}
+  if(t.dataset.filter==='q'){S.f.q=t.value;const l=$('#issue-list');if(l)l.innerHTML=issueList();const c=$('#icount');if(c)c.textContent=filtered().length}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset.f&&S.draft){S.draft[t.dataset.f]=t.value;if(t.dataset.f==='planId'&&S.draftKind==='issue'){S.draft.x=null;S.draft.y=null;rerenderModal(renderIssueModal)}return}
+  if(t.dataset.att&&S.draft){const a=S.draft.att[t.dataset.att]=S.draft.att[t.dataset.att]||{};a[t.dataset.k]=t.value;return}
+  if(t.dataset.filter&&t.dataset.filter!=='q'){S.f[t.dataset.filter]=t.value;render();return}
+  if(t.dataset.rep){S.rep[t.dataset.rep]=t.value;render();return}
+  if(t.dataset.repSt){S.rep.st[t.dataset.repSt]=t.checked;return}
+  if(t.dataset.repB){S.rep[t.dataset.repB]=t.checked;return}
+  if(t.dataset.file){const files=[...t.files];t.value='';if(!files.length)return;
+    if(t.dataset.file==='plan')addPlans(files);else if(t.dataset.file==='photo')addPhotos(files);
+    else if(t.dataset.file==='ptphoto'){(async()=>{for(const f of files){if(PT.photos.length>=4)break;busy('Préparation de la photo…');try{PT.photos.push(await smallPhoto(f))}catch(_){toast("Impossible de lire l'image")}}busy();PT.redraw()})()}}});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;if(e.target.id==='cmt'){e.preventDefault();ACT['d-cmt']()}else if(e.target.id==='kp-text'){e.preventDefault();ACT['kp-add']()}else if(e.target.id==='af-text'){e.preventDefault();const b=$('[data-act="act-quick"]');b&&ACT['act-quick'](b)}});
+init();
+</script>
+</body>
+</html>
